@@ -40,21 +40,22 @@ class UserManager(BaseUserManager):
         return self._create_user(username, email, password, **extra_fields)
 
 
-class Account(AbstractBaseUser, PermissionsMixin):
+class Climber(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
 
     email = models.EmailField(_('email address'), blank=True, unique=True,
-        error_messages={'unique': _("A user with that username already exists."), }, )
+                              error_messages={'unique': _("A user with that username already exists."), }, )
     username = models.CharField(_('username'), max_length=150, unique=True,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        validators=[username_validator], error_messages={'unique': _("A user with that username already exists."), }, )
+                                help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                validators=[username_validator],
+                                error_messages={'unique': _("A user with that username already exists."), }, )
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False,
-        help_text=_('Designates whether the user can log into this admin site.'), )
+                                   help_text=_('Designates whether the user can log into this admin site.'), )
     is_active = models.BooleanField(_('active'), default=True,
-        help_text=_('Designates whether this user should be treated as active. '
-                    'Unselect this instead of deleting accounts.'), )
+                                    help_text=_('Designates whether this user should be treated as active. '
+                                                'Unselect this instead of deleting accounts.'), )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
 
@@ -71,4 +72,21 @@ class Account(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser
 
     def has_module_perms(self, app_label) -> bool:
-        return True
+        return self.is_active
+
+
+class Stat(models.Model):
+    logged = models.DateTimeField(auto_now_add=True)
+    edited = models.DateTimeField(auto_now=True)
+    climber = models.ForeignKey(Climber, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+
+class Height(Stat):
+    height = models.PositiveIntegerField()
+
+
+class Weight(Stat):
+    weight = models.PositiveIntegerField()
