@@ -18,13 +18,30 @@ class AutoAddAccountModelAdmin(admin.ModelAdmin):
             obj.account = request.user
         super().save_model(request, obj, form, change)
 
+    readonly_fields = (
+        'updated',
+        'created',
+    )
+
     class Meta:
         abstract = True
 
 
 class SimpleModelAdmin(AutoAddAccountModelAdmin):
-    list_display = ('name', 'slug', 'description', 'created', 'updated', 'account')
-    fields = ('name', 'slug', 'description', 'account')
+    list_display = (
+        'name',
+        'slug',
+        'description',
+        'created',
+        'updated',
+        'account',
+    )
+    fields = (
+        'name',
+        'slug',
+        'description',
+        'account',
+    )
 
     class Meta:
         abstract = True
@@ -87,8 +104,7 @@ class HangboardAdmin(AutoAddAccountModelAdmin):
     )
 
 
-@admin.register(WorkoutSet)
-class WorkoutSetAdmin(AutoAddAccountModelAdmin):
+class BaseWorkoutSetAdmin(AutoAddAccountModelAdmin):
     list_display = (
         'name',
         'exercise',
@@ -105,6 +121,7 @@ class WorkoutSetAdmin(AutoAddAccountModelAdmin):
     )
     fields = (
         'name',
+        'slug',
         'workout',
         'left_hold',
         'left_fingers',
@@ -115,72 +132,51 @@ class WorkoutSetAdmin(AutoAddAccountModelAdmin):
         'weight',
         'reps',
         'exercise',
+        'updated',
+        'custom',
         'account',
     )
 
+    class Meta:
+        abstract = True
+
+
+@admin.register(WorkoutSet)
+class WorkoutSetAdmin(BaseWorkoutSetAdmin):
+    pass
+
+
+@admin.register(TemplateWorkoutSet)
+class TemplateWorkoutSetAdmin(BaseWorkoutSetAdmin):
+    pass
+
+
+class BaseWorkoutAdmin(AutoAddAccountModelAdmin):
+    list_display = (
+        'name',
+        'slug',
+        'description',
+        'created',
+        'updated',
+        'completed',
+        'account',
+    )
+    fields = (
+        'name',
+        'slug',
+        'description',
+        'completed',
+        'account',
+    )
+
+    class Meta:
+        abstract = True
 
 @admin.register(Workout)
-class WorkoutAdmin(AutoAddAccountModelAdmin):
-    list_display = (
-        'name',
-        'slug',
-        'description',
-        'created',
-        'updated',
-        'scheduled',
-        'completed',
-        'account',
-    )
-    fields = (
-        'name',
-        'slug',
-        'description',
-        'created',
-        'updated',
-        'scheduled',
-        'completed',
-        'account',
-    )
+class WorkoutAdmin(BaseWorkoutAdmin):
+    pass
 
 
 @admin.register(TemplateWorkout)
-class TemplateWorkoutAdmin(AutoAddAccountModelAdmin):
-    list_display = (
-        'name',
-        'slug',
-        'description',
-        'created',
-        'updated',
-        'account',
-    )
-
-@admin.register(TemplateWorkoutSet)
-class TemplateWorkoutSetAdmin(AutoAddAccountModelAdmin):
-    list_display = (
-        'name',
-        'exercise',
-        'workout',
-        'left_hold',
-        'left_fingers',
-        'right_hold',
-        'right_fingers',
-        'rest_interval',
-        'duration',
-        'weight',
-        'reps',
-        'account',
-    )
-    fields = (
-        'name',
-        'workout',
-        'left_hold',
-        'left_fingers',
-        'right_hold',
-        'right_fingers',
-        'rest_interval',
-        'duration',
-        'weight',
-        'reps',
-        'exercise',
-        'account',
-    )
+class TemplateWorkoutAdmin(BaseWorkoutAdmin):
+    pass

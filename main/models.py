@@ -69,6 +69,7 @@ class BaseWorkoutSet(SimpleModel):
 
 class BaseWorkout(SimpleModel):
     note = models.TextField(blank=True, null=True, default='')
+    completed = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
