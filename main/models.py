@@ -53,13 +53,7 @@ class Hold(SimpleModel):
     default_fingers = models.IntegerField(default=4)
 
 
-class Workout(SimpleModel):
-    logged = models.DateTimeField(auto_now_add=True)
-
-
-class WorkoutSet(SimpleModel):
-    left_hold = models.ForeignKey(Hold, related_name='left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='right_hold', on_delete=models.CASCADE, null=True, blank=True)
+class BaseWorkoutSet(SimpleModel):
     left_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     right_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     rest_interval = models.PositiveIntegerField(default=60)
@@ -67,7 +61,33 @@ class WorkoutSet(SimpleModel):
     weight = models.IntegerField(default=0)
     reps = models.PositiveIntegerField(default=1)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+
+class BaseWorkout(SimpleModel):
+    note = models.TextField(blank=True, null=True, default='')
+
+    class Meta:
+        abstract = True
+
+
+class Workout(BaseWorkout):
+    scheduled = models.DateTimeField(auto_now_add=True)
+    difficulty = models.PositiveIntegerField(blank=True, null=True,
+                                             validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+
+class TemplateWorkout(BaseWorkout):
+    pass
+
+
+class WorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    left_hold = models.ForeignKey(Hold, related_name='left_hold', on_delete=models.CASCADE, null=True, blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='right_hold', on_delete=models.CASCADE, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.left_hold and not self.right_hold:
@@ -77,3 +97,9 @@ class WorkoutSet(SimpleModel):
         if not self.description:
             self.description = self.name
         super().save(*args, *kwargs)
+
+
+class TemplateWorkoutSet(BaseWorkoutSet):
+    workout = models.ForeignKey(TemplateWorkout, on_delete=models.CASCADE)
+    left_hold = models.ForeignKey(Hold, related_name='template_left_hold', on_delete=models.CASCADE, null=True, blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='template_right_hold', on_delete=models.CASCADE, null=True, blank=True)

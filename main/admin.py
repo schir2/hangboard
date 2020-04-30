@@ -7,6 +7,8 @@ from main.models import Workout
 from main.models import WorkoutSet
 from main.models import Exercise
 from main.models import Material
+from main.models import TemplateWorkout
+from main.models import TemplateWorkoutSet
 
 
 class AutoAddAccountModelAdmin(admin.ModelAdmin):
@@ -30,8 +32,24 @@ class SimpleModelAdmin(AutoAddAccountModelAdmin):
 
 @admin.register(Hold)
 class HoldAdmin(AutoAddAccountModelAdmin):
-    list_display = ('name', 'slug', 'hold_type', 'hangboard', 'description', 'created', 'updated', 'account')
-    fields = ('name', 'slug', 'hold_type', 'hangboard', 'description', 'account')
+    list_display = (
+        'name',
+        'slug',
+        'hold_type',
+        'hangboard',
+        'description',
+        'created',
+        'updated',
+        'account'
+    )
+    fields = (
+        'name',
+        'slug',
+        'hold_type',
+        'hangboard',
+        'description',
+        'account'
+    )
 
 
 @admin.register(Exercise)
@@ -51,16 +69,118 @@ class HoldTypeAdmin(SimpleModelAdmin):
 
 @admin.register(Hangboard)
 class HangboardAdmin(AutoAddAccountModelAdmin):
-    list_display = ('name', 'slug', 'material', 'description', 'created', 'updated', 'account')
-    fields = ('name', 'slug', 'material', 'description', 'account')
+    list_display = (
+        'name',
+        'slug',
+        'material',
+        'description',
+        'created',
+        'updated',
+        'account',
+    )
+    fields = (
+        'name',
+        'slug',
+        'material',
+        'description',
+        'account',
+    )
 
 
 @admin.register(WorkoutSet)
 class WorkoutSetAdmin(AutoAddAccountModelAdmin):
-    list_display = ('name',)
+    list_display = (
+        'name',
+        'exercise',
+        'workout',
+        'left_hold',
+        'left_fingers',
+        'right_hold',
+        'right_fingers',
+        'rest_interval',
+        'duration',
+        'weight',
+        'reps',
+        'account',
+    )
+    fields = (
+        'name',
+        'workout',
+        'left_hold',
+        'left_fingers',
+        'right_hold',
+        'right_fingers',
+        'rest_interval',
+        'duration',
+        'weight',
+        'reps',
+        'exercise',
+        'account',
+    )
 
 
 @admin.register(Workout)
 class WorkoutAdmin(AutoAddAccountModelAdmin):
-    list_display = ('name', 'slug', 'description', 'created', 'updated', 'logged', 'account')
-    fields = ('name', 'slug', 'description', 'account')
+    list_display = (
+        'name',
+        'slug',
+        'description',
+        'created',
+        'updated',
+        'scheduled',
+        'completed',
+        'account',
+    )
+    fields = (
+        'name',
+        'slug',
+        'description',
+        'created',
+        'updated',
+        'scheduled',
+        'completed',
+        'account',
+    )
+
+
+@admin.register(TemplateWorkout)
+class TemplateWorkoutAdmin(AutoAddAccountModelAdmin):
+    list_display = (
+        'name',
+        'slug',
+        'description',
+        'created',
+        'updated',
+        'account',
+    )
+
+@admin.register(TemplateWorkoutSet)
+class TemplateWorkoutSetAdmin(AutoAddAccountModelAdmin):
+    list_display = (
+        'name',
+        'exercise',
+        'workout',
+        'left_hold',
+        'left_fingers',
+        'right_hold',
+        'right_fingers',
+        'rest_interval',
+        'duration',
+        'weight',
+        'reps',
+        'account',
+    )
+    fields = (
+        'name',
+        'workout',
+        'left_hold',
+        'left_fingers',
+        'right_hold',
+        'right_fingers',
+        'rest_interval',
+        'duration',
+        'weight',
+        'reps',
+        'exercise',
+        'account',
+    )
