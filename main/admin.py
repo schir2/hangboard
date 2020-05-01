@@ -15,7 +15,7 @@ class AutoAddClimberModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             # Only set added_by during the first save.
-            obj.account = request.user
+            obj.climber = request.user
         super().save_model(request, obj, form, change)
 
     readonly_fields = (

@@ -5,4 +5,4 @@ from climbers.models import Climber
 
 if __name__ == '__main__':
 
-    test_climber = Climber.objects.get('schir2@gmail.com')
+    test_climber = Climber.objects.get(email='schir2@gmail.com')

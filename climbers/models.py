@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         current_user = self.model.objects.get(email=email)
         current_user.profile
         current_user.preference
+        current_user.stat
         return user
 
     def create_user(self, username: str, email: str = None, password: str = None, **extra_fields):
@@ -70,7 +71,7 @@ class Climber(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(
         _('active'), default=True,
         help_text=_('Designates whether this user should be treated as active. '
-                                                'Unselect this instead of deleting accounts.'),
+                    'Unselect this instead of deleting accounts.'),
     )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
@@ -96,6 +97,10 @@ class Profile(models.Model):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
 
+    def get_age(self):
+        return timezone.now().year - self.birth_date.year
+    get_age.short_description = 'age'
+
     def __repr__(self):
         return f'Profile(climber={self.climber}, ' \
                f'first_name={self.first_name}, ' \
@@ -103,7 +108,7 @@ class Profile(models.Model):
                f'birth_date={self.birth_date})'
 
     def __str__(self):
-        return f'{self.climber} {self.first_name} {self.last_name}'
+        return f"{self.climber}'s Profile {self.first_name} {self.last_name}"
 
 
 class Preference(models.Model):
@@ -113,35 +118,52 @@ class Preference(models.Model):
     )
 
     climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
-    measurement = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
+    measurement_system = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
 
     def __repr__(self):
-        return f'Preference(climber={self.climber}, measurement={self.measurement})'
+        return f'Preference(climber={self.climber}, measurement={self.measurement_system})'
 
     def __str__(self):
-        return f'{self.climber}'
+        return f"{self.climber}'s Preferences"
 
-class Stat(models.Model):
+
+class Measurement(models.Model):
+    climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
+
+    def get_current_height(self):
+        return self.height_set.latest()
+    get_current_height.short_description = 'height'
+
+    def get_current_weight(self):
+        return self.weight_set.latest()
+    get_current_weight.short_description = 'weight'
+
+    def __repr__(self):
+        return ''
+
+    def __str__(self):
+        return f"{self.climber}'s Measurements"
+
+
+class BaseStat(models.Model):
     logged = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
-
-    def get_measurement_system(self):
-        pass
+    measurement = models.ForeignKey(Measurement, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
+        get_latest_by = 'logged'
 
 
-class Height(Stat):
+class Height(BaseStat):
     height = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f'{self.height}'
 
 
-class Weight(Stat):
+class Weight(BaseStat):
     weight = models.PositiveIntegerField(default=0)
 
     def __str__(self):

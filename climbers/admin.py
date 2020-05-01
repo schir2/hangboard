@@ -3,20 +3,29 @@ from django.contrib import admin
 from climbers.models import Climber
 from climbers.models import Profile
 from climbers.models import Preference
+from climbers.models import Measurement
 from climbers.models import Height
 from climbers.models import Weight
 
 
-class AutoAddClimberModelAdmin(admin.ModelAdmin):
+class AutoAddClimberAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             # Only set added_by during the first save.
-            obj.account = request.user
+            obj.climber = request.user
+        super().save_model(request, obj, form, change)
+
+
+class AutoAddMeasurementAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            # Only set added_by during the first save.
+            obj.measurement = request.user.measurement
         super().save_model(request, obj, form, change)
 
 
 @admin.register(Climber)
-class ClimberAdmin(AutoAddClimberModelAdmin):
+class ClimberAdmin(admin.ModelAdmin):
     fields = (
         'email',
         'username',
@@ -29,27 +38,36 @@ class ClimberAdmin(AutoAddClimberModelAdmin):
 
 
 @admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(AutoAddClimberAdmin):
     pass
 
 
 @admin.register(Preference)
-class PreferenceAdmin(admin.ModelAdmin):
+class PreferenceAdmin(AutoAddClimberAdmin):
     pass
 
 
-class StatAdmin(AutoAddClimberModelAdmin):
+@admin.register(Measurement)
+class MeasurementAdmin(AutoAddClimberAdmin):
+
+    fields = ('get_current_weight', 'get_current_height',)
+    readonly_fields = ('get_current_weight', 'get_current_height',)
+
+class StatAdmin(AutoAddMeasurementAdmin):
+
     fields = (
         'logged',
         'edited',
-        'climber',
         'created',
+        'measurement',
     )
 
     readonly_fields = (
         'edited',
         'created',
+        'measurement',
     )
+
 
 @admin.register(Height)
 class HeightAdmin(StatAdmin):
