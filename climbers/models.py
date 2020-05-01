@@ -10,7 +10,7 @@ class UserManager(BaseUserManager):
 
     def _create_user(self, username: str, email: str, password: str, **extra_fields):
         """
-        Create and save a user with the given username, email, and password.
+        Create and save a user with the given handle, email, and password.
         """
         if not email:
             raise ValueError('The given email must be set')
@@ -43,21 +43,34 @@ class UserManager(BaseUserManager):
 class Climber(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
 
-    email = models.EmailField(_('email address'), blank=True, unique=True,
-                              error_messages={'unique': _("A user with that username already exists."), }, )
-    username = models.CharField(_('username'), max_length=150, unique=True,
-                                help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-                                validators=[username_validator],
-                                error_messages={'unique': _("A user with that username already exists."), }, )
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=150, blank=True)
-    is_staff = models.BooleanField(_('staff status'), default=False,
-                                   help_text=_('Designates whether the user can log into this admin site.'), )
-    is_active = models.BooleanField(_('active'), default=True,
-                                    help_text=_('Designates whether this user should be treated as active. '
-                                                'Unselect this instead of deleting accounts.'), )
+    email = models.EmailField(
+        _('email address'),
+        blank=True,
+        unique=True,
+        error_messages={'unique': _("A user with that username already exists."), },
+    )
+    username = models.CharField(
+        _('username'),
+        max_length=150,
+        unique=True,
+        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+        validators=[username_validator],
+        error_messages={'unique': _("A user with that username already exists."), },
+    )
+    is_staff = models.BooleanField(
+        _('staff status'),
+        default=False,
+        help_text=_('Designates whether the user can log into this admin site.'),
+    )
+    is_active = models.BooleanField(
+        _('active'), default=True,
+        help_text=_('Designates whether this user should be treated as active. '
+                                                'Unselect this instead of deleting accounts.'),
+    )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
+
+    profile = models.OneToOneField('Profile', on_delete=models.CASCADE)
+    preference = models.OneToOneField('Preference', on_delete=models.CASCADE)
 
     objects = UserManager()
 
@@ -75,18 +88,48 @@ class Climber(AbstractBaseUser, PermissionsMixin):
         return self.is_active
 
 
+class Profile(models.Model):
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
+    birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
+
+    def __repr__(self):
+        return f'Profile({self.first_name, self.last_name, self.birth_date})'
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+
+class Preference(models.Model):
+    MEASUREMENT_CHOICES = (
+        ('METRIC', 'Metric'),
+        ('IMPERIAL', 'Imperial'),
+    )
+    measurement = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
+
+
 class Stat(models.Model):
-    logged = models.DateTimeField(auto_now_add=True)
+    logged = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
-    climber = models.ForeignKey(Climber, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
+
+    def get_measurement_system(self):
+        pass
 
     class Meta:
         abstract = True
 
 
 class Height(Stat):
-    height = models.PositiveIntegerField()
+    height = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.height}'
 
 
 class Weight(Stat):
-    weight = models.PositiveIntegerField()
+    weight = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.weight}'

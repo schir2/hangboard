@@ -11,7 +11,7 @@ from main.models import TemplateWorkout
 from main.models import TemplateWorkoutSet
 
 
-class AutoAddAccountModelAdmin(admin.ModelAdmin):
+class AutoAddClimberModelAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             # Only set added_by during the first save.
@@ -23,11 +23,7 @@ class AutoAddAccountModelAdmin(admin.ModelAdmin):
         'created',
     )
 
-    class Meta:
-        abstract = True
-
-
-class SimpleModelAdmin(AutoAddAccountModelAdmin):
+class SimpleModelAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'slug',
@@ -43,12 +39,8 @@ class SimpleModelAdmin(AutoAddAccountModelAdmin):
         'account',
     )
 
-    class Meta:
-        abstract = True
-
-
 @admin.register(Hold)
-class HoldAdmin(AutoAddAccountModelAdmin):
+class HoldAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'slug',
@@ -85,7 +77,7 @@ class HoldTypeAdmin(SimpleModelAdmin):
 
 
 @admin.register(Hangboard)
-class HangboardAdmin(AutoAddAccountModelAdmin):
+class HangboardAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'slug',
@@ -104,7 +96,7 @@ class HangboardAdmin(AutoAddAccountModelAdmin):
     )
 
 
-class BaseWorkoutSetAdmin(AutoAddAccountModelAdmin):
+class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'exercise',
@@ -151,7 +143,7 @@ class TemplateWorkoutSetAdmin(BaseWorkoutSetAdmin):
     pass
 
 
-class BaseWorkoutAdmin(AutoAddAccountModelAdmin):
+class BaseWorkoutAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'slug',
@@ -169,8 +161,6 @@ class BaseWorkoutAdmin(AutoAddAccountModelAdmin):
         'account',
     )
 
-    class Meta:
-        abstract = True
 
 @admin.register(Workout)
 class WorkoutAdmin(BaseWorkoutAdmin):
