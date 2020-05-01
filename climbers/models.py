@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from annoying.fields import AutoOneToOneField
 
 
 class UserManager(BaseUserManager):
@@ -21,6 +22,10 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
+
+        current_user = self.model.objects.get(email=email)
+        current_user.profile
+        current_user.preference
         return user
 
     def create_user(self, username: str, email: str = None, password: str = None, **extra_fields):
@@ -69,9 +74,6 @@ class Climber(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
-    profile = models.OneToOneField('Profile', on_delete=models.CASCADE)
-    preference = models.OneToOneField('Preference', on_delete=models.CASCADE)
-
     objects = UserManager()
 
     EMAIL_FIELD = 'email'
@@ -89,24 +91,35 @@ class Climber(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
+    climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
 
     def __repr__(self):
-        return f'Profile({self.first_name, self.last_name, self.birth_date})'
+        return f'Profile(climber={self.climber}, ' \
+               f'first_name={self.first_name}, ' \
+               f'last_name={self.last_name}, ' \
+               f'birth_date={self.birth_date})'
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.climber} {self.first_name} {self.last_name}'
 
 
 class Preference(models.Model):
-    MEASUREMENT_CHOICES = (
+    MEASUREMENT_CHOICES =(
         ('METRIC', 'Metric'),
         ('IMPERIAL', 'Imperial'),
     )
+
+    climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
     measurement = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
 
+    def __repr__(self):
+        return f'Preference(climber={self.climber}, measurement={self.measurement})'
+
+    def __str__(self):
+        return f'{self.climber}'
 
 class Stat(models.Model):
     logged = models.DateTimeField(default=timezone.now)
