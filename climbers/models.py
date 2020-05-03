@@ -84,6 +84,14 @@ class Climber(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return self.email
 
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(' \
+               f'email={self.email},' \
+               f'username={self.username},' \
+               f'is_staff={self.is_staff},' \
+               f'is_active={self.is_active},' \
+               f'date_joined={self.date_joined})'
+
     def has_perm(self, perm, obj=None) -> bool:
         return self.is_superuser
 
@@ -96,13 +104,14 @@ class Profile(models.Model):
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
     birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
+    gender = models.CharField(_('gender'), max_length=30, blank=True, null=True)
 
     def get_age(self):
         return timezone.now().year - self.birth_date.year
     get_age.short_description = 'age'
 
     def __repr__(self):
-        return f'Profile(climber={self.climber}, ' \
+        return f'{self.__class__.__name__}(climber={self.climber}, ' \
                f'first_name={self.first_name}, ' \
                f'last_name={self.last_name}, ' \
                f'birth_date={self.birth_date})'
@@ -119,9 +128,15 @@ class Preference(models.Model):
 
     climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
     measurement_system = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
+    rest_interval = models.PositiveIntegerField(default=60)
+    duration = models.PositiveIntegerField(default=10)
 
     def __repr__(self):
-        return f'Preference(climber={self.climber}, measurement={self.measurement_system})'
+        return f'{self.__class__.__name__}(' \
+               f'climber={self.climber}, ' \
+               f'measurement_system={self.measurement_system},' \
+               f'rest_interval={self.rest_interval},' \
+               f'duration={self.duration})'
 
     def __str__(self):
         return f"{self.climber}'s Preferences"
@@ -139,7 +154,8 @@ class Measurement(models.Model):
     get_current_weight.short_description = 'weight'
 
     def __repr__(self):
-        return ''
+        return f'{self.__class__.__name__}(' \
+               f'climber={self.climber})'
 
     def __str__(self):
         return f"{self.climber}'s Measurements"
