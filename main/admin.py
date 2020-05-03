@@ -23,6 +23,7 @@ class AutoAddClimberModelAdmin(admin.ModelAdmin):
         'created',
     )
 
+
 class SimpleModelAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
@@ -30,14 +31,15 @@ class SimpleModelAdmin(AutoAddClimberModelAdmin):
         'description',
         'created',
         'updated',
-        'account',
+        'climber',
     )
     fields = (
         'name',
         'slug',
         'description',
-        'account',
+        'climber',
     )
+
 
 @admin.register(Hold)
 class HoldAdmin(AutoAddClimberModelAdmin):
@@ -49,7 +51,7 @@ class HoldAdmin(AutoAddClimberModelAdmin):
         'description',
         'created',
         'updated',
-        'account'
+        'climber'
     )
     fields = (
         'name',
@@ -57,7 +59,7 @@ class HoldAdmin(AutoAddClimberModelAdmin):
         'hold_type',
         'hangboard',
         'description',
-        'account'
+        'climber',
     )
 
 
@@ -78,6 +80,12 @@ class HoldTypeAdmin(SimpleModelAdmin):
 
 @admin.register(Hangboard)
 class HangboardAdmin(AutoAddClimberModelAdmin):
+
+    def get_holds(self, request, obj):
+        if obj:
+            return obj.hold_set
+    get_holds.short_description = 'holds'
+
     list_display = (
         'name',
         'slug',
@@ -85,15 +93,17 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
         'description',
         'created',
         'updated',
-        'account',
+        'climber',
     )
     fields = (
         'name',
         'slug',
         'material',
         'description',
-        'account',
+        'climber',
+        'get_holds',
     )
+    readonly_fields = ('get_holds',)
 
 
 class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
@@ -109,7 +119,7 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'duration',
         'weight',
         'reps',
-        'account',
+        'climber',
     )
     fields = (
         'name',
@@ -126,7 +136,7 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'exercise',
         'updated',
         'custom',
-        'account',
+        'climber',
     )
 
     class Meta:
@@ -151,14 +161,14 @@ class BaseWorkoutAdmin(AutoAddClimberModelAdmin):
         'created',
         'updated',
         'completed',
-        'account',
+        'climber',
     )
     fields = (
         'name',
         'slug',
         'description',
         'completed',
-        'account',
+        'climber',
     )
 
 
