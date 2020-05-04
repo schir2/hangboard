@@ -81,11 +81,6 @@ class HoldTypeAdmin(SimpleModelAdmin):
 @admin.register(Hangboard)
 class HangboardAdmin(AutoAddClimberModelAdmin):
 
-    def get_holds(self, request, obj):
-        if obj:
-            return obj.hold_set
-    get_holds.short_description = 'holds'
-
     list_display = (
         'name',
         'slug',
@@ -96,14 +91,14 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
         'climber',
     )
     fields = (
+        'pk',
         'name',
         'slug',
         'material',
         'description',
         'climber',
-        'get_holds',
     )
-    readonly_fields = ('get_holds',)
+    readonly_fields = ('pk',)
 
 
 class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
@@ -115,7 +110,7 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'left_fingers',
         'right_hold',
         'right_fingers',
-        'rest_interval',
+        'rest_between',
         'duration',
         'weight',
         'reps',
@@ -129,7 +124,7 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'left_fingers',
         'right_hold',
         'right_fingers',
-        'rest_interval',
+        'rest_between',
         'duration',
         'weight',
         'reps',
@@ -138,9 +133,6 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'custom',
         'climber',
     )
-
-    class Meta:
-        abstract = True
 
 
 @admin.register(WorkoutSet)
