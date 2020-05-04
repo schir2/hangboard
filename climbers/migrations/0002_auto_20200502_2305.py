@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='preference',
-            name='rest_interval',
+            name='rest_between',
             field=models.PositiveIntegerField(default=60),
         ),
         migrations.AddField(
