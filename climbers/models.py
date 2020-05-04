@@ -128,14 +128,15 @@ class Preference(models.Model):
 
     climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
     measurement_system = models.CharField(max_length=10, choices=MEASUREMENT_CHOICES, default='IMPERIAL')
-    rest_interval = models.PositiveIntegerField(default=60)
+    rest_between = models.PositiveIntegerField(default=10)
+    rest_after = models.PositiveIntegerField(default=60)
     duration = models.PositiveIntegerField(default=10)
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \
                f'climber={self.climber}, ' \
                f'measurement_system={self.measurement_system},' \
-               f'rest_interval={self.rest_interval},' \
+               f'rest_between={self.rest_between},' \
                f'duration={self.duration})'
 
     def __str__(self):
