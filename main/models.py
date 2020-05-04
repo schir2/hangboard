@@ -57,6 +57,10 @@ class Hold(SimpleModel):
     hold_type = models.ForeignKey(HoldType, on_delete=models.CASCADE)
     size = models.PositiveIntegerField(default=20, null=True, blank=True)
     default_fingers = models.IntegerField(default=4)
+    position = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = (('position', 'hangboard',),)
 
 
 class BaseWorkout(SimpleModel):
@@ -68,12 +72,16 @@ class BaseWorkout(SimpleModel):
 
 
 class Workout(BaseWorkout):
+    hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     scheduled = models.DateTimeField(auto_now_add=True)
     difficulty = models.PositiveIntegerField(
         blank=True,
         null=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+
+    class Meta:
+        get_latest_by = ('updated',)
 
 
 class TemplateWorkout(BaseWorkout):
@@ -82,19 +90,23 @@ class TemplateWorkout(BaseWorkout):
 
 class BaseWorkoutSet(SimpleModel):
     name = models.CharField(max_length=100, blank=True, null=True)
-    left_hold = models.ForeignKey(Hold, related_name='left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = NotImplemented
+    right_hold = NotImplemented
     left_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     right_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
-    rest_interval = models.PositiveIntegerField(default=60)
+    rest_between = models.PositiveIntegerField(default=60)
+    rest_after = models.PositiveIntegerField(default=60)
     duration = models.PositiveIntegerField(default=0)
     weight = models.IntegerField(default=0)
     reps = models.PositiveIntegerField(default=1)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
+    position = models.PositiveIntegerField(default=0)
 
     class Meta:
         abstract = True
+        unique_together = (('position', 'workout'),)
+        get_latest_by = ('position',)
 
     def save(self, *args, **kwargs):
         if not self.left_hold and not self.right_hold:
@@ -111,11 +123,11 @@ class BaseWorkoutSet(SimpleModel):
 
 class WorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
 
 
 class TemplateWorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(TemplateWorkout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='template_left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='template_right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='template_workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
