@@ -56,7 +56,8 @@ class Hold(SimpleModel):
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     hold_type = models.ForeignKey(HoldType, on_delete=models.CASCADE)
     size = models.PositiveIntegerField(default=20, null=True, blank=True)
-    default_fingers = models.IntegerField(default=4)
+    angle = models.IntegerField(null=True, blank=True)
+    max_fingers = models.IntegerField(default=4)
     position = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -88,10 +89,14 @@ class TemplateWorkout(BaseWorkout):
     pass
 
 
-class BaseWorkoutSet(SimpleModel):
-    name = models.CharField(max_length=100, blank=True, null=True)
+class BaseWorkoutSet(models.Model):
+
+    # Not Implemented
     left_hold = NotImplemented
     right_hold = NotImplemented
+
+    # Simple Fields
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     left_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     right_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     rest_between = models.PositiveIntegerField(default=60)
@@ -99,26 +104,38 @@ class BaseWorkoutSet(SimpleModel):
     duration = models.PositiveIntegerField(default=0)
     weight = models.IntegerField(default=0)
     reps = models.PositiveIntegerField(default=1)
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    completed = models.BooleanField(default=False)
     position = models.PositiveIntegerField(default=0)
+    custom = models.BooleanField(default=True)
+    completed = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    # Foreign keys
+    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         abstract = True
         unique_together = (('position', 'workout'),)
         get_latest_by = ('position',)
 
-    def save(self, *args, **kwargs):
-        if not self.left_hold and not self.right_hold:
-            raise ValueError('No holds selected')
-        if not self.left_hold:
-            self.left_fingers = None
-
-        if not self.slug:
-            self.slug = slugify(self.name, allow_unicode=True)
-        if not self.description:
-            self.description = self.name
-        super().save(*args, *kwargs)
+    def __repr__(self):
+        return f'{self.__class__.__name__}(' \
+               f'climber={self.climber},' \
+               f'exercise={self.exercise},' \
+               f'left_hold={self.left_hold},' \
+               f'left_fingers={self.left_fingers},' \
+               f'right_hold={self.right_hold},' \
+               f'right_fingers={self.right_fingers},' \
+               f'rest_between={self.rest_between},' \
+               f'rest_after={self.rest_after},' \
+               f'duration={self.duration},' \
+               f'weight={self.weight},' \
+               f'reps={self.reps},' \
+               f'position={self.position},' \
+               f'custom={self.custom},' \
+               f'completed={self.completed},' \
+               f'created={self.created},' \
+               f'updated={self.updated})'
 
 
 class WorkoutSet(BaseWorkoutSet):
