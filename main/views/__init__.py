@@ -1,12 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.core import paginator
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .forms import *
-from main.models import Hangboard
 from main.models import Workout
 
 
@@ -36,3 +35,9 @@ class WorkoutListView(ListView):
 
     def get_queryset(self):
         return Workout.objects.filter(climber=self.request.user)
+
+
+@method_decorator(login_required, 'dispatch')
+class WorkoutDetailView(DetailView):
+    model = Workout
+    context_object_name = 'workout'
