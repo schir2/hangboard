@@ -1,0 +1,6 @@
+<h1>{{ workout.name }}</h1>
+{{ workout.hangboard }}
+{% for workoutset in workout.workoutset_set.all %}
+    {{ workoutset }}
+{% endfor %}
+<p>Date: {{ workout.updated }}</p>
