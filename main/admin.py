@@ -51,7 +51,7 @@ class HoldAdmin(AutoAddClimberModelAdmin):
         'size',
         'angle',
         'hangboard',
-        'position',
+        'position_id',
         'description',
         'created',
         'updated',
@@ -65,7 +65,7 @@ class HoldAdmin(AutoAddClimberModelAdmin):
         'size',
         'angle',
         'hangboard',
-        'position',
+        'position_id',
         'description',
         'climber',
     )
@@ -124,7 +124,6 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'climber',
     )
     fields = (
-        'slug',
         'workout',
         'left_hold',
         'left_fingers',
@@ -136,6 +135,7 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'reps',
         'exercise',
         'updated',
+        'logged',
         'custom',
         'climber',
     )
@@ -168,6 +168,7 @@ class BaseWorkoutAdmin(AutoAddClimberModelAdmin):
         'description',
         'completed',
         'climber',
+        'logged',
     )
 
 
