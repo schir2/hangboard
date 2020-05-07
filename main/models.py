@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from main.managers import SimpleModelManager
+from django.utils import timezone
 
 
 class SimpleModel(models.Model):
@@ -9,9 +10,11 @@ class SimpleModel(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')
     custom = models.BooleanField(default=True)
-    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
+    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    objects = SimpleModelManager()
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \
@@ -24,13 +27,6 @@ class SimpleModel(models.Model):
 
     def __str__(self):
         return f'{self.name}'
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name, allow_unicode=True)
-        if not self.description:
-            self.description = self.name
-        super().save(*args, *kwargs)
 
     class Meta:
         abstract = True
@@ -53,15 +49,29 @@ class Hangboard(SimpleModel):
 
 
 class Hold(SimpleModel):
+    LEFT = 'L'
+    MIDDLE = 'M'
+    RIGHT = 'R'
+    POSITIONS = ((LEFT, 'left'), (MIDDLE, 'middle'), (RIGHT, 'right'),)
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     hold_type = models.ForeignKey(HoldType, on_delete=models.CASCADE)
     size = models.PositiveIntegerField(default=20, null=True, blank=True)
     angle = models.IntegerField(null=True, blank=True)
     max_fingers = models.IntegerField(default=4)
-    position = models.PositiveIntegerField(default=1)
+    position_id = models.PositiveIntegerField(default=1)
+    position = models.CharField(max_length=32, choices=POSITIONS, default=MIDDLE)
 
     class Meta:
-        unique_together = (('position', 'hangboard',),)
+        pass
+        unique_together = (('position_id', 'hangboard',),)
+
+    def is_same_type(self, other) -> bool:
+        return all((self.hold_type_id == other.hold_type_id, self.max_fingers == other.max_fingers, self.size == other.size,
+                    self.angle == other.angle,))
+
+    @classmethod
+    def create_hold(cls, hangboard_id, climber_id, hold_type_id, size: int = None, ):
+        cls.save()
 
 
 class BaseWorkout(SimpleModel):
@@ -74,12 +84,9 @@ class BaseWorkout(SimpleModel):
 
 class Workout(BaseWorkout):
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
-    scheduled = models.DateTimeField(auto_now_add=True)
-    difficulty = models.PositiveIntegerField(
-        blank=True,
-        null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5)]
-    )
+    logged = models.DateTimeField(auto_now_add=True)
+    difficulty = models.PositiveIntegerField(blank=True, null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(5)])
 
     class Meta:
         get_latest_by = ('updated',)
@@ -90,7 +97,6 @@ class TemplateWorkout(BaseWorkout):
 
 
 class BaseWorkoutSet(models.Model):
-
     # Not Implemented
     left_hold = NotImplemented
     right_hold = NotImplemented
@@ -109,13 +115,14 @@ class BaseWorkoutSet(models.Model):
     completed = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    logged = models.DateTimeField(default=timezone.now)
 
     # Foreign keys
-    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
+    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
-        unique_together = (('position', 'workout'),)
+        # unique_together = (('position', 'workout'),)
         get_latest_by = ('position',)
 
     def __repr__(self):
@@ -137,14 +144,31 @@ class BaseWorkoutSet(models.Model):
                f'created={self.created},' \
                f'updated={self.updated})'
 
+    def __str__(self):
+        string_builder = ''
+        left_hold = Hold.objects.get(pk=self.left_hold) if self.left_hold else None
+        right_hold = Hold.objects.get(pk=self.right_hold) if self.right_hold else None
+        if self.left_hold and self.right_hold:
+            # Getting Hold Objects
+            if all([self.left_fingers == self.right_fingers, left_hold == right_hold]):
+                pass
+            pass
+        elif self.left_hold:
+            pass
+        elif self.right_hold:
+            pass
+        else:
+            raise ValueError('No Holds Selected')
+        return f'{self.__repr__()}'
+
 
 class WorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE)
+    right_hold = models.ForeignKey(Hold, related_name='workout_set_right_hold', on_delete=models.CASCADE)
 
 
 class TemplateWorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(TemplateWorkout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='template_workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE)
+    right_hold = models.ForeignKey(Hold, related_name='template_workout_set_right_hold', on_delete=models.CASCADE)
