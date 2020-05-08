@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from main.managers import SimpleModelManager
+from main.managers import WorkoutManager
 from django.utils import timezone
 
 
@@ -71,6 +72,7 @@ class Hold(SimpleModel):
 
 
 class BaseWorkout(SimpleModel):
+    slug = models.SlugField(unique=True)
     note = models.TextField(blank=True, null=True, default='')
     completed = models.BooleanField(default=False)
 
@@ -86,6 +88,8 @@ class Workout(BaseWorkout):
         null=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)],
     )
+
+    objects = WorkoutManager()
 
     class Meta:
         get_latest_by = ('updated',)
@@ -109,7 +113,7 @@ class BaseWorkoutSet(models.Model):
     duration = models.PositiveIntegerField(default=0)
     weight = models.IntegerField(default=0)
     reps = models.PositiveIntegerField(default=1)
-    position = models.PositiveIntegerField(default=0)
+    position = models.PositiveIntegerField(default=1)
     custom = models.BooleanField(default=True)
     completed = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
@@ -144,7 +148,7 @@ class BaseWorkoutSet(models.Model):
                f'updated={self.updated})'
 
     def __str__(self):
-        string_builder = [self.exercise.name]
+        string_builder = [self.exercise.name, self.position]
         left_hold = Hold.objects.get(pk=self.left_hold.pk) if self.left_hold else None
         right_hold = Hold.objects.get(pk=self.right_hold.pk) if self.right_hold else None
         if self.left_hold and self.right_hold:

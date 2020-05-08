@@ -4,6 +4,7 @@ from main.models import Hangboard
 from climbers.models import Climber
 from main.models import Material
 from main.models import HoldType
+from main.models import Workout
 
 # Create your tests here.
 
@@ -74,3 +75,11 @@ class MainTestCase(TestCase):
         self.assertTrue(not self.left_crimp.is_same_type(self.left_jug))
         self.assertTrue(not self.left_jug.is_same_type(self.right_sloper))
         self.assertTrue(self.left_crimp.is_same_type(self.left_crimp))
+
+    def test_create_workout(self):
+        self.workout = Workout.objects.create_workout(
+            name='Pull Up Pyramid',
+            climber=self.climber,
+            hangboard=self.hangboard,
+        )
+        print(self.workout, self.workout.slug)

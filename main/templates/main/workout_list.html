@@ -1,8 +1,8 @@
 <h1>Workouts</h1>
 <ul>
 {% for workout in workouts %}
-/'    <a href="{% url 'workout_detail' workout.slug %}">
-    <li>{{ workout.name }} - {{ workout.updated }}</li>
+    <a href="{% url 'workout_detail' workout.slug %}">
+        <li>{{ workout.name }} - {{ workout.updated }}</li>
     </a>
 {% empty %}
     <li>No workouts yet.</li>
