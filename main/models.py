@@ -69,10 +69,6 @@ class Hold(SimpleModel):
         return all((self.hold_type_id == other.hold_type_id, self.max_fingers == other.max_fingers, self.size == other.size,
                     self.angle == other.angle,))
 
-    @classmethod
-    def create_hold(cls, hangboard_id, climber_id, hold_type_id, size: int = None, ):
-        cls.save()
-
 
 class BaseWorkout(SimpleModel):
     note = models.TextField(blank=True, null=True, default='')
@@ -85,8 +81,11 @@ class BaseWorkout(SimpleModel):
 class Workout(BaseWorkout):
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     logged = models.DateTimeField(auto_now_add=True)
-    difficulty = models.PositiveIntegerField(blank=True, null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5)])
+    difficulty = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
 
     class Meta:
         get_latest_by = ('updated',)
@@ -122,7 +121,7 @@ class BaseWorkoutSet(models.Model):
 
     class Meta:
         abstract = True
-        # unique_together = (('position', 'workout'),)
+        unique_together = (('position', 'workout'),)
         get_latest_by = ('position',)
 
     def __repr__(self):
@@ -145,21 +144,33 @@ class BaseWorkoutSet(models.Model):
                f'updated={self.updated})'
 
     def __str__(self):
-        string_builder = ''
-        left_hold = Hold.objects.get(pk=self.left_hold) if self.left_hold else None
-        right_hold = Hold.objects.get(pk=self.right_hold) if self.right_hold else None
+        string_builder = [self.exercise.name]
+        left_hold = Hold.objects.get(pk=self.left_hold.pk) if self.left_hold else None
+        right_hold = Hold.objects.get(pk=self.right_hold.pk) if self.right_hold else None
         if self.left_hold and self.right_hold:
             # Getting Hold Objects
-            if all([self.left_fingers == self.right_fingers, left_hold == right_hold]):
-                pass
-            pass
+            if all([self.left_fingers == self.right_fingers, left_hold.is_same_type(right_hold)]):
+                string_builder.append(self.left_hold.size)
+                string_builder.append(self.left_hold.hold_type.name)
+                string_builder.append(f'Fingers {self.left_fingers}')
+            else:
+                string_builder.append(self.left_hold.name)
+                string_builder.append(f'Fingers {self.left_fingers}')
+                string_builder.append(self.right_hold.name)
+                string_builder.append(f'Fingers {self.right_fingers}')
         elif self.left_hold:
-            pass
+            string_builder.append(self.left_hold.name)
+            string_builder.append(self.left_fingers)
         elif self.right_hold:
-            pass
+            string_builder.append(self.right_hold.name)
+            string_builder.append(f'Fingers {self.right_fingers}')
         else:
             raise ValueError('No Holds Selected')
-        return f'{self.__repr__()}'
+
+        string_builder.append(f'Duration {self.duration}')
+        string_builder.append(f'Reps {self.reps}')
+
+        return ' | '.join(str(string_) for string_ in string_builder if string_)
 
 
 class WorkoutSet(BaseWorkoutSet):
