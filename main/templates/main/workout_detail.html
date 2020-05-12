@@ -1,7 +1,12 @@
 <h1>{{ workout.name }}</h1>
 {{ workout.hangboard }}
+<form method="post">
+    {% csrf_token %}
+    {{ from.as_p }}
+    <button type="submit">+</button>
+</form>
+{{ form }}
 {% for workoutset in workout.workoutset_set.all %}
     {{ workoutset }}
-    {{ workoutset.position }}
 {% endfor %}
 <p>Date: {{ workout.updated }}</p>

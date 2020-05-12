@@ -5,27 +5,33 @@ from climbers.models import Climber
 from main.models import Material
 from main.models import HoldType
 from main.models import Workout
+from main.models import WorkoutSet
+from main.models import Exercise
+
 
 # Create your tests here.
 
 class MainTestCase(TestCase):
 
-    def setUp(self):
-        self.climber = Climber.objects.create_user(
+    def create_climber(self):
+        return Climber.objects.create_user(
             username='test_user',
             email='test@test.com',
             password='testPassword!',
         )
+
+    def setUp(self):
+        self.climber = self.create_climber()
         self.material = Material.objects.create_object(
             name='Test Material',
             climber=self.climber,
         )
-        print(self.material)
         self.hangboard = Hangboard.objects.create(
             name='Test Hangboard',
             climber=self.climber,
             material=self.material,
         )
+        self.exercise = Exercise.objects.create(name='Pull Up', climber=self.climber)
         self.crimp = HoldType.objects.create(name='Test Crimp', climber=self.climber)
         self.jug = HoldType.objects.create(name='Test Jug', climber=self.climber)
         self.sloper = HoldType.objects.create(name='Test Sloper', climber=self.climber)
@@ -70,16 +76,52 @@ class MainTestCase(TestCase):
             position='M',
         )
 
+        self.workout = Workout.objects.add_workout(
+            name='Pull Up Pyramid',
+            climber=self.climber,
+            hangboard=self.hangboard,
+        )
+
     def test_hold_type_equality(self):
         self.assertTrue(self.left_crimp.is_same_type(self.right_crimp))
         self.assertTrue(not self.left_crimp.is_same_type(self.left_jug))
         self.assertTrue(not self.left_jug.is_same_type(self.right_sloper))
         self.assertTrue(self.left_crimp.is_same_type(self.left_crimp))
 
-    def test_create_workout(self):
-        self.workout = Workout.objects.create_workout(
-            name='Pull Up Pyramid',
+    def test_workout_set_manager(self):
+        first_workout_set = WorkoutSet.objects.add_workout_set(
             climber=self.climber,
-            hangboard=self.hangboard,
+            exercise=self.exercise,
+            workout=self.workout,
+            left_fingers=0,
+            right_hold=self.right_sloper,
+            right_fingers=self.right_sloper.max_fingers,
+
         )
-        print(self.workout, self.workout.slug)
+        print(first_workout_set)
+
+        second_workout_set = WorkoutSet.objects.add_workout_set(
+            climber=self.climber,
+            exercise=self.exercise,
+            workout=self.workout,
+            previous=first_workout_set,
+            left_fingers=0,
+            right_hold=self.left_crimp,
+            right_fingers=self.right_sloper.max_fingers,
+
+        )
+        print(second_workout_set)
+
+        third_workout_set = WorkoutSet.objects.add_workout_set(
+            climber=self.climber,
+            exercise=self.exercise,
+            workout=self.workout,
+            previous=first_workout_set,
+            next_workout_set=second_workout_set,
+            left_fingers=0,
+            right_hold=self.left_jug,
+            right_fingers=self.right_sloper.max_fingers,
+
+        )
+        for item in WorkoutSet.objects.all():
+            print(item)

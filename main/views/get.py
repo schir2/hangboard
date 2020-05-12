@@ -5,8 +5,9 @@ from django.views.generic.detail import DetailView
 from django.core import paginator
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
-from .forms import *
 from main.models import Workout
 from main.models import WorkoutSet
 
@@ -58,3 +59,5 @@ class WorkoutSetDetailView(View):
             position=self.kwargs['position'],
         )
         return render(request, template_name=self.template_name, context=context)
+
+

@@ -1,15 +1,30 @@
 from django.forms import ModelForm
 from django import forms
-from django.utils.text import slugify
+from django.utils import timezone
+from django.forms.widgets import DateTimeInput
 
 from main.models import WorkoutSet, Workout
-from climbers.models import Climber, Profile, Preference, Measurement
+from climbers.models import Climber, Preference, Measurement
 
 
-class WorkoutSetForm(ModelForm):
+class AddWorkoutForm(ModelForm):
+
+    name = forms.CharField(strip=True, required=False)
+    logged = forms.DateTimeField(initial=timezone.now(), widget=DateTimeInput)
+
+    class Meta:
+        model = Workout
+        fields = (
+            'hangboard',
+            'name',
+            'logged',
+        )
+
+
+class AddWorkoutSetForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(WorkoutSetForm, self).__init__(*args, **kwargs)
+        super(AddWorkoutSetForm, self).__init__(*args, **kwargs)
         climber = Climber.objects.get(pk=args[0]['climber'])
         preference = Preference.objects.get(pk=climber.pk)
         measurement = Measurement.objects.get(pk=climber.pk)
