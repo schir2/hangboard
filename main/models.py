@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.signals import pre_delete
+
 from main.managers import SimpleModelManager
 from main.managers import WorkoutManager
 from main.managers import WorkoutSetManager
-from django.utils import timezone
 
 
 class SimpleModel(models.Model):
@@ -92,17 +93,24 @@ class Workout(BaseWorkout):
     class Meta:
         get_latest_by = ('updated',)
 
+    def get_workout_sets(self):
+        workout_sets = []
+        current_workout_set = WorkoutSet.objects.filter(workout=self, previous=None)
+        current_workout_set = current_workout_set[0] if current_workout_set else None
+        while current_workout_set:
+            workout_sets.append(current_workout_set)
+            current_workout_set = WorkoutSet.objects.filter(workout=self, previous=current_workout_set)
+            current_workout_set = current_workout_set[0] if current_workout_set else None
+        return workout_sets
+
 
 class TemplateWorkout(BaseWorkout):
     pass
 
 
 class BaseWorkoutSet(models.Model):
-    # Not Implemented
     left_hold = NotImplemented
     right_hold = NotImplemented
-
-    # Simple Fields
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     left_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     right_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
@@ -115,20 +123,18 @@ class BaseWorkoutSet(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     logged = models.DateTimeField()
-    previous = models.ForeignKey('self', null=True, blank=True, related_name='previous_workoutset', on_delete=models.CASCADE)
-
-    # Foreign keys
+    previous = models.ForeignKey('self', null=True, blank=True, related_name='previous_workoutset', on_delete=models.DO_NOTHING)
     climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     objects = WorkoutSetManager()
 
     class Meta:
         abstract = True
-        #unique_together = (('previous', 'workout'),)
         get_latest_by = ('previous',)
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \
+               f'pk={self.pk},' \
                f'climber={self.climber},' \
                f'exercise={self.exercise},' \
                f'left_hold={self.left_hold},' \
@@ -145,7 +151,7 @@ class BaseWorkoutSet(models.Model):
                f'updated={self.updated})'
 
     def __str__(self):
-        string_builder = [self.exercise.name, self.previous.pk if self.previous else 0]
+        string_builder = [self.pk, self.previous, self.exercise.name, self.previous.pk if self.previous else 0]
         left_hold = Hold.objects.get(pk=self.left_hold.pk) if self.left_hold else None
         right_hold = Hold.objects.get(pk=self.right_hold.pk) if self.right_hold else None
         if self.left_hold and self.right_hold:

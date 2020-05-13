@@ -1,7 +1,9 @@
 from django.test import TestCase
+
+from climbers.models import Climber
+
 from main.models import Hold
 from main.models import Hangboard
-from climbers.models import Climber
 from main.models import Material
 from main.models import HoldType
 from main.models import Workout
@@ -98,7 +100,6 @@ class MainTestCase(TestCase):
             right_fingers=self.right_sloper.max_fingers,
 
         )
-        print(first_workout_set)
 
         second_workout_set = WorkoutSet.objects.add_workout_set(
             climber=self.climber,
@@ -110,18 +111,54 @@ class MainTestCase(TestCase):
             right_fingers=self.right_sloper.max_fingers,
 
         )
-        print(second_workout_set)
 
         third_workout_set = WorkoutSet.objects.add_workout_set(
             climber=self.climber,
             exercise=self.exercise,
             workout=self.workout,
-            previous=first_workout_set,
-            next_workout_set=second_workout_set,
+            previous=second_workout_set,
+            next_workout_set=None,
             left_fingers=0,
             right_hold=self.left_jug,
             right_fingers=self.right_sloper.max_fingers,
-
         )
-        for item in WorkoutSet.objects.all():
-            print(item)
+
+        workout_sets = self.workout.get_workout_sets()
+        for workout_set in workout_sets:
+            print(workout_set)
+
+        self.assertEqual(
+            first_workout_set.previous,
+            None,
+            'first_workout_set.previous should be set to None'
+        )
+
+        self.assertEqual(
+            second_workout_set.previous,
+            first_workout_set,
+            'second_workout_set.previous should be first_workout_set'
+        )
+
+        self.assertEqual(
+            third_workout_set.previous,
+            second_workout_set,
+            'third_workout_set.previous should be equal to second_workout_set'
+        )
+
+        second_workout_set.delete()
+        third_workout_set = WorkoutSet.objects.get(pk=third_workout_set.pk)
+
+        self.assertEqual(
+            third_workout_set.previous,
+            first_workout_set,
+            'third_workout_set.previous should be first_workout_set after deletion'
+        )
+
+        first_workout_set.delete()
+        third_workout_set = WorkoutSet.objects.get(pk=third_workout_set.pk)
+
+        self.assertEqual(
+            third_workout_set.previous,
+            None,
+            'third_workout_set.previous should be None after deletion'
+        )

@@ -102,6 +102,6 @@ class WorkoutSetManager(Manager):
         current_workout_set.save(using=self._db)
         if next_workout_set:
             next_workout_set.previous = current_workout_set
-            next_workout_set.save()
+            next_workout_set.save(using=self.db)
 
         return current_workout_set

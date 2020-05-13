@@ -1,8 +1,5 @@
-from abc import ABCMeta, abstractmethod
-from django.views.generic.base import TemplateView
+from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.core import paginator
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -10,20 +7,6 @@ from django.shortcuts import render
 
 from main.models import Workout
 from main.models import WorkoutSet
-
-
-class BaseView(TemplateView, metaclass=ABCMeta):
-
-    @abstractmethod
-    def get(self, request, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def post(self, request, *args, **kwargs):
-        pass
-
-    def pagination(self, data, results_per_page: int = 20) -> paginator:
-        pass
 
 
 @method_decorator(login_required, 'dispatch')
@@ -40,10 +23,19 @@ class WorkoutListView(ListView):
         return Workout.objects.filter(climber=self.request.user)
 
 
-@method_decorator(login_required, 'dispatch')
-class WorkoutDetailView(DetailView):
-    model = Workout
-    context_object_name = 'workout'
+@login_required
+def workout_detail_view(request, *args, **kwargs):
+    template_name = 'main/workout_detail.html'
+    context = dict()
+    context['title'] = 'Workout Detail'
+    context['workout'] = Workout.objects.get(slug=kwargs['slug'])
+
+    if request.method == 'POST':
+        pass
+    else:
+        pass
+
+    return render(request, template_name=template_name, context=context)
 
 
 @method_decorator(login_required, 'dispatch')
