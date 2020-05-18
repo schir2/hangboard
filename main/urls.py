@@ -7,7 +7,8 @@ from main.views.get import workout_detail_view
 from main.views.get import WorkoutSetDetailView
 
 urlpatterns = [
-    path('forms/workout_set', add_workout_set_view, name='add_workout_set'),
+    path('forms/workout_set/<int:workout_id>', add_workout_set_view, name='add_workout_set'),
+    path('forms/workout_set/<int:workout_id>/<int:previous>', add_workout_set_view, name='add_workout_set'),
     path('forms/add_workout', add_workout_view, name='add_workout'),
     path('', WorkoutListView.as_view(), name='workout_list'),
     path('<slug:slug>/', workout_detail_view, name='workout_detail'),

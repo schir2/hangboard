@@ -111,6 +111,8 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
 
 class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
     list_display = (
+        'pk',
+        'previous_id',
         'exercise',
         'workout',
         'left_hold',
@@ -136,8 +138,8 @@ class BaseWorkoutSetAdmin(AutoAddClimberModelAdmin):
         'exercise',
         'updated',
         'logged',
-        'custom',
         'climber',
+        'previous',
     )
 
 

@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from django.forms.widgets import DateTimeInput
 
-from main.models import WorkoutSet, Workout
+from main.models import WorkoutSet, Workout, Exercise
 from climbers.models import Climber, Preference, Measurement
 
 
@@ -23,51 +23,44 @@ class AddWorkoutForm(ModelForm):
 
 class AddWorkoutSetForm(ModelForm):
 
+    weight = forms.IntegerField()
+    rest_between = forms.IntegerField()
+    rest_after = forms.IntegerField()
+
     def __init__(self, *args, **kwargs):
         super(AddWorkoutSetForm, self).__init__(*args, **kwargs)
-        climber = Climber.objects.get(pk=args[0]['climber'])
+        initial = kwargs.get('initial', None)
+        climber = Climber.objects.get(pk=initial['climber'])
         preference = Preference.objects.get(pk=climber.pk)
         measurement = Measurement.objects.get(pk=climber.pk)
-        workout = Workout.objects.filter(pk=args[0]['workout']).latest()
-        workout_sets = workout.workoutset_set.all()
+        workout = Workout.objects.get(pk=initial['workout'])
+        workout_sets = workout.get_workout_sets()
         hold_set = workout.hangboard.hold_set
+        exercises = Exercise.objects.all()
+
         if workout_sets:
-            latest_workout_set = workout_sets.latest()
-            self.fields['exercise'] = forms.IntegerField(initial=latest_workout_set.exercise)
-            self.fields['position'] = forms.IntegerField(initial=latest_workout_set.position)
-            self.fields['weight'] = forms.IntegerField(initial=latest_workout_set.weight)
-            self.fields['rest_between'] = forms.IntegerField(initial=latest_workout_set.rest_between)
-            self.fields['rest_after'] = forms.IntegerField(initial=latest_workout_set.rest_after)
-            self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
-            self.fields['right_hold'] = forms.ModelChoiceField(queryset=hold_set)
+            previous = WorkoutSet.objects.get(pk=initial['previous'])
+            self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
+            self.fields['weight'] = forms.IntegerField(initial=previous.weight)
+            self.fields['rest_between'] = forms.IntegerField(initial=previous.rest_between)
+            self.fields['rest_after'] = forms.IntegerField(initial=previous.rest_after)
+            self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set, initial=previous.left_hold)
+            self.fields['right_hold'] = forms.ModelChoiceField(queryset=hold_set, initial=previous.right_hold)
         else:
-            self.fields['position'] = forms.IntegerField(initial=0)
             self.fields['weight'] = forms.IntegerField(initial=measurement.get_current_weight())
             self.fields['rest_between'] = forms.IntegerField(initial=preference.rest_between)
-            self.fields['rest_after'] = forms.IntegerField(initial=preference.rest_after)
             self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
             self.fields['right_hold'] = forms.ModelChoiceField(queryset=hold_set)
+            self.fields['rest_after'] = forms.IntegerField(initial=preference.rest_after)
 
     class Meta:
         model = WorkoutSet
         fields = (
             'exercise',
-            'weight',
-            'reps',
-            'duration', 'rest_between',
             'left_hold',
             'left_fingers',
             'right_hold',
             'right_fingers',
-
-        )
-        exclude = (
-            'slug',
-            'description',
-            'name',
-            'workout',
-            'completed',
-            'custom',
-            'climber',
-            'workout',
+            'duration',
+            'rest_after',
         )

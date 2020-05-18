@@ -1,12 +1,11 @@
 <h1>{{ workout.name }}</h1>
-{{ workout.hangboard }}
-<form method="post">
-    {% csrf_token %}
-    {{ from.as_p }}
-    <button type="submit">+</button>
-</form>
+<h2>{{ workout.hangboard }}</h2>
 {{ form }}
-{% for workoutset in workout.workoutset_set.all %}
-    {{ workoutset }}
+{% for workoutset in workout.get_workout_sets %}
+    {{ workoutset.pk }}
+    {{ workoutset.exercise }}
+    <a href="{% url 'add_workout_set' workout_id=workout.pk previous=workoutset.pk %}">+</a><br>
+{% empty %}
+    <a href="{% url 'add_workout_set' workout_id=workout.pk %}">+</a>
 {% endfor %}
 <p>Date: {{ workout.updated }}</p>

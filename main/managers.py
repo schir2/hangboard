@@ -100,6 +100,7 @@ class WorkoutSetManager(Manager):
         )
 
         current_workout_set.save(using=self._db)
+        print(next_workout_set)
         if next_workout_set:
             next_workout_set.previous = current_workout_set
             next_workout_set.save(using=self.db)
