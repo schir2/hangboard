@@ -28,7 +28,7 @@ def workout_detail_view(request, *args, **kwargs):
     template_name = 'main/workout_detail.html'
     context = dict()
     context['title'] = 'Workout Detail'
-    context['workout'] = Workout.objects.get(slug=kwargs['slug'])
+    context['workout'] = Workout.objects.get(pk=kwargs.get('workout_id'))
 
     if request.method == 'POST':
         pass

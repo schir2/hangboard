@@ -1,7 +1,7 @@
 <h1>Workouts</h1>
 <ul>
 {% for workout in workouts %}
-    <a href="{% url 'workout_detail' workout.slug %}">
+    <a href="{% url 'workout_detail' workout_id=workout.pk username=workout.climber.username %}">
         <li>{{ workout.name }} - {{ workout.updated }}</li>
     </a>
 {% empty %}

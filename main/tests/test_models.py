@@ -117,7 +117,6 @@ class MainTestCase(TestCase):
             exercise=self.exercise,
             workout=self.workout,
             previous=second_workout_set,
-            next_workout_set=None,
             left_fingers=0,
             right_hold=self.left_jug,
             right_fingers=self.right_sloper.max_fingers,

@@ -12,7 +12,7 @@ class Climber(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(
         _('email address'),
-        blank=True,
+        max_length=150,
         unique=True,
         error_messages={'unique': _("A user with that username already exists."), },
     )

@@ -38,7 +38,7 @@ class AddWorkoutSetForm(ModelForm):
         hold_set = workout.hangboard.hold_set
         exercises = Exercise.objects.all()
 
-        if workout_sets:
+        if workout_sets and initial['previous']:
             previous = WorkoutSet.objects.get(pk=initial['previous'])
             self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
             self.fields['weight'] = forms.IntegerField(initial=previous.weight)

@@ -29,7 +29,7 @@ def add_workout_view(request, *args, **kwargs):
 
 
 @login_required
-def add_workout_set_view(request, workout_id, previous=None):
+def add_workout_set_view(request, workout_id, username, previous=None, *args, **kwargs):
     template_name = 'main/forms/add_workout_set.html'
     context = dict()
     context['title'] = 'Add Workout Set'
@@ -41,21 +41,16 @@ def add_workout_set_view(request, workout_id, previous=None):
     }
     if request.method == 'POST':
         context['form'] = AddWorkoutSetForm(request.POST, initial=initial_fields)
-        next_workout_set = None
-        if previous:
-            previous = WorkoutSet.objects.get(pk=previous)
-            next_workout_set = WorkoutSet.objects.filter(previous=previous)
-            next_workout_set = next_workout_set.all()[0] if next_workout_set else None
+        previous = WorkoutSet.objects.get(pk=previous) if previous else None
         if context['form'].is_valid():
             workout_set = WorkoutSet.objects.add_workout_set(
                 climber=request.user,
                 workout=workout,
                 previous=previous,
-                next_workout_set=next_workout_set,
                 **context['form'].cleaned_data
             )
             workout_set.save()
-            return redirect('workout_detail', slug=workout.slug)
+            return redirect('workout_detail', workout_id=workout.pk, username=username)
         else:
             raise ValueError('Invalid Form Values')
     else:

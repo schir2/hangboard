@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models.signals import pre_delete
 
 from main.managers import SimpleModelManager
 from main.managers import WorkoutManager
@@ -151,7 +150,7 @@ class BaseWorkoutSet(models.Model):
                f'updated={self.updated})'
 
     def __str__(self):
-        string_builder = [self.pk, self.previous, self.exercise.name, self.previous.pk if self.previous else 0]
+        string_builder = [self.pk, self.exercise.name, self.previous.pk if self.previous else 0]
         left_hold = Hold.objects.get(pk=self.left_hold.pk) if self.left_hold else None
         right_hold = Hold.objects.get(pk=self.right_hold.pk) if self.right_hold else None
         if self.left_hold and self.right_hold:

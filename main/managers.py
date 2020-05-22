@@ -30,7 +30,6 @@ class WorkoutManager(Manager):
             slug: str = None,
             description: str = None,
             custom: bool = True,
-            #  logged=timezone.now().strftime('%Y %b %d %H %M %S'),
             logged=str(timezone.now()),
             **extra_fields,
     ):
@@ -70,7 +69,6 @@ class WorkoutSetManager(Manager):
             exercise: int,
             workout: int,
             previous=None,
-            next_workout_set=None,
             left_hold: int = None,
             left_fingers: int = 4,
             right_hold: int = None,
@@ -82,6 +80,12 @@ class WorkoutSetManager(Manager):
             logged=str(timezone.now()),
             **extra_fields,
     ):
+
+        """ Find the next workout set before current_workout_set is created to avoid current_workout_set pointing to
+        # itself when previous is none"""
+        next_workout_set_queryset = self.filter(previous_id=previous.pk) if previous else self.filter(workout=workout, previous=None)
+        next_workout_set = next_workout_set_queryset.all()[0] if next_workout_set_queryset else None
+
         current_workout_set = self.model(
             climber=climber,
             exercise=exercise,
@@ -98,9 +102,8 @@ class WorkoutSetManager(Manager):
             logged=logged,
             **extra_fields,
         )
-
         current_workout_set.save(using=self._db)
-        print(next_workout_set)
+
         if next_workout_set:
             next_workout_set.previous = current_workout_set
             next_workout_set.save(using=self.db)
