@@ -1,4 +1,6 @@
 {% load static %}
+{% load socialaccount %}
+{% providers_media_js %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -19,9 +21,9 @@
                 <a href="{% url 'profile' username=user.username %}">Profile</a>
                 <a href="{% url 'preferences' username=user.username %}">Preferences</a>
                 <a href="{% url 'measurements' username=user.username %}">Measurements</a>
-                <a href="@">Log Out</a>
+                <a href="{% url 'account_logout' %}">Log Out</a>
             {% else %}
-                <a href="@">Log In</a>
+                <a href="{% provider_login_url "google" %}">Log In</a>
             {% endif %}
         </nav>
         {% block header %}
