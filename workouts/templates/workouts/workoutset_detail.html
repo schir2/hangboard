@@ -1,3 +1,8 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+
 <div id="workoutset-grid grid-detail">
 <h1>{{ workoutset }}</h1>
 {% for item in workoutset %}
@@ -11,3 +16,5 @@
     <span class="grid-key">Rest After</span><span>{{ workoutset.rest_after }}</span>
 {% endfor %}
 </div>
+
+{% endblock %}

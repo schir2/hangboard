@@ -1,3 +1,7 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
 <h1>Workouts</h1>
 <ul>
 {% for workout in workouts %}
@@ -8,3 +12,5 @@
     <li>No workouts yet.</li>
 {% endfor %}
 </ul>
+
+{% endblock %}

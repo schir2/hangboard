@@ -1,0 +1,22 @@
+@import 'normalize';
+@import 'fonts';
+@import 'colors';
+
+html{
+  background:$white;
+  color:$dark;
+}
+a{
+  text-decoration: none;
+  color:$orange;
+}
+
+header{
+  nav{
+    display: flex;
+    justify-content: center;
+    a{
+      margin:1em;
+    }
+  }
+}

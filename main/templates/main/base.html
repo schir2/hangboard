@@ -9,13 +9,19 @@
         <meta name="description" content="{{ description }}">
 
         <!-- Stylesheets -->
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
     </head>
     <header>
         <nav>
+            <a href="{% url 'home' %}">hangboard.io</a>
             {% if user.is_authenticated %}
-            <a href="{% url 'workout_list' username=user.username %}">Workouts</a>
-            <a href="{% url 'profile_view' username=user.username %}">Profile</a>
+                <a href="{% url 'workout_list' username=user.username %}">Workouts</a>
+                <a href="{% url 'profile' username=user.username %}">Profile</a>
+                <a href="{% url 'preferences' username=user.username %}">Preferences</a>
+                <a href="{% url 'measurements' username=user.username %}">Measurements</a>
+                <a href="@">Log Out</a>
+            {% else %}
+                <a href="@">Log In</a>
             {% endif %}
         </nav>
         {% block header %}

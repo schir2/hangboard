@@ -1,3 +1,7 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
 <h1>{{ workout.name }}</h1>
 <h2>{{ workout.hangboard }}</h2>
 {{ form }}
@@ -10,3 +14,5 @@
     <h1>No sets</h1>
 {% endfor %}
 <p>Date: {{ workout.updated }}</p>
+
+{% endblock %}
