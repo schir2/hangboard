@@ -121,4 +121,5 @@ dmypy.json
 # End of https://www.gitignore.io/api/django
 /.idea/
 /venv/
-migrations/*
+*/migrations/*
+/static/admin/
