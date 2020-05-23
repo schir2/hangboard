@@ -6,14 +6,17 @@
         <!-- Meta Tags -->
         <meta charset="UTF-8">
         <meta name="author" content="Marek Schir">
-        <meta name="description" content="App for all things hangboarding">
+        <meta name="description" content="{{ description }}">
 
         <!-- Stylesheets -->
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
     <header>
         <nav>
-            <a href="{% url '' %}"
+            {% if user.is_authenticated %}
+            <a href="{% url 'workout_list' username=user.username %}">Workouts</a>
+            <a href="{% url 'profile_view' username=user.username %}">Profile</a>
+            {% endif %}
         </nav>
         {% block header %}
 
