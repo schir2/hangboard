@@ -17,11 +17,6 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-
-        current_user = self.model.objects.get(email=email)
-        current_user.profile
-        current_user.preference
-        current_user.measurement
         return user
 
     def create_user(self, username: str, email: str = None, password: str = None, **extra_fields):

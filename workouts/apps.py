@@ -5,4 +5,4 @@ class WorkoutsConfig(AppConfig):
     name = 'workouts'
 
     def ready(self):
-        import workouts.signals
+        import climbers.signals
