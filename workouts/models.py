@@ -47,7 +47,16 @@ class Exercise(SimpleModel):
 
 
 class Hangboard(SimpleModel):
+
+    def user_directory_path(instance, filename):
+        # file will be uploaded to MEDIA_ROOT/uploads/<username>/hangboards/<filename>
+        return f'uploads/{instance.climber.username}/hangboards/{filename}'
+
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
+
+    class Meta:
+        unique_together = (('name', 'climber',),)
 
 
 class Hold(SimpleModel):
@@ -61,10 +70,9 @@ class Hold(SimpleModel):
     angle = models.IntegerField(null=True, blank=True)
     max_fingers = models.IntegerField(default=4)
     position_id = models.PositiveIntegerField(default=1)
-    position = models.CharField(max_length=32, choices=POSITIONS, default=MIDDLE)
+    position = models.CharField(max_length=1, choices=POSITIONS, default=MIDDLE)
 
     class Meta:
-        pass
         unique_together = (('position_id', 'hangboard',),)
 
     def is_same_type(self, other) -> bool:
@@ -84,8 +92,7 @@ class BaseWorkout(SimpleModel):
 class Workout(BaseWorkout):
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     logged = models.DateTimeField()
-    difficulty = models.PositiveIntegerField(blank=True, null=True,
-        validators=[MinValueValidator(1), MaxValueValidator(5)], )
+    difficulty = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)],)
 
     objects = WorkoutManager()
 

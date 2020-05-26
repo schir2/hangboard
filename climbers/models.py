@@ -64,7 +64,7 @@ class Profile(models.Model):
     climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
-    birth_date = models.DateField(_('brith date'), default=timezone.datetime(year=1986, month=2, day=12))
+    birth_date = models.DateField(_('birth date'), default=timezone.datetime(year=1986, month=2, day=12))
     gender = models.CharField(_('gender'), max_length=30, blank=True, null=True)
 
     def get_age(self):
@@ -108,11 +108,13 @@ class Measurement(models.Model):
     climber = AutoOneToOneField(Climber, on_delete=models.CASCADE, primary_key=True)
 
     def get_current_height(self):
-        return self.height_set.latest()
+        height = self.height_set.latest()
+        return height if height else 0
     get_current_height.short_description = 'height'
 
     def get_current_weight(self):
-        return self.weight_set.latest()
+        weight = self.weight_set.filter(measurement__climber=self.climber).all()
+        return weight[-1] if weight else 0
     get_current_weight.short_description = 'weight'
 
     def __repr__(self):

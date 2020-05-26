@@ -3,7 +3,7 @@ from django import forms
 from django.utils import timezone
 from django.forms.widgets import DateTimeInput
 
-from workouts.models import WorkoutSet, Workout, Exercise
+from workouts.models import WorkoutSet, Workout, Exercise, Hangboard
 from climbers.models import Climber, Preference, Measurement
 
 
@@ -63,4 +63,25 @@ class AddWorkoutSetForm(ModelForm):
             'right_fingers',
             'duration',
             'rest_after',
+        )
+
+
+class AddExerciseForm(ModelForm):
+
+    class Meta:
+        model = Exercise
+        fields = (
+            'name',
+            'climber',
+        )
+
+
+class AddHangboardForm(ModelForm):
+
+    class Meta:
+        model = Hangboard
+        fields = (
+            'name',
+            'material',
+            'climber',
         )

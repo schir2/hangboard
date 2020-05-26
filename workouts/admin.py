@@ -92,6 +92,7 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'slug',
+        'image',
         'material',
         'description',
         'created',
@@ -101,6 +102,7 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
     fields = (
         'pk',
         'name',
+        'image',
         'slug',
         'material',
         'description',

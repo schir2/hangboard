@@ -1,0 +1,15 @@
+{%  extends 'main/base.html' %}
+
+{% block content %}
+    
+    <h1>Exercises</h1>
+    <ul>
+    {% for exercise in exercises %}
+        {{ exercise.name }}
+    {% empty %}
+        <li>No exercises yet.</li>
+    {% endfor %}
+    <a href="{% url 'add_exercise' username=user.username %}">Add</a>
+    </ul>
+    
+{% endblock %}

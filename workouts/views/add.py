@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 
 from workouts.forms import AddWorkoutForm
 from workouts.forms import AddWorkoutSetForm
+from workouts.forms import AddExerciseForm
+from workouts.forms import AddHangboardForm
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
@@ -10,7 +12,7 @@ from workouts.models import WorkoutSet
 
 @login_required
 def add_workout_view(request, *args, **kwargs):
-    template_name = 'workouts/forms/add_workout.html'
+    template_name = 'workouts/add/workout.html'
     context = dict()
     context['title'] = 'Add Workout'
     if request.method == 'POST':
@@ -20,7 +22,7 @@ def add_workout_view(request, *args, **kwargs):
                 climber=request.user,
                 **context['form'].cleaned_data
             )
-            return redirect('workout_detail', slug=workout.slug)
+            return redirect('workout_detail', workout_id=workout.id, username=request.user.username)
         else:
             raise ValueError('Invalid Form Values')
     else:
@@ -30,7 +32,7 @@ def add_workout_view(request, *args, **kwargs):
 
 @login_required
 def add_workout_set_view(request, workout_id, username, previous=None, *args, **kwargs):
-    template_name = 'workouts/forms/add_workout_set.html'
+    template_name = 'workouts/add/workout_set.html'
     context = dict()
     context['title'] = 'Add Workout Set'
     workout = Workout.objects.get(pk=workout_id)
@@ -56,4 +58,35 @@ def add_workout_set_view(request, workout_id, username, previous=None, *args, **
     else:
         context['form'] = AddWorkoutSetForm(initial=initial_fields)
 
+    return render(request, template_name=template_name, context=context)
+
+
+@login_required
+def add_exercise_view(request, username, *args, **kwargs):
+    template_name = 'workouts/add/exercise.html'
+    context = dict()
+    context['title'] = 'Add Exercise'
+    initial_fields = {'climber': request.user.pk}
+    if request.method == 'POST':
+        context['form'] = AddExerciseForm(request.POST, initial=initial_fields)
+        if context['form'].is_valid():
+            context['form'].save()
+    else:
+        context['form'] = AddExerciseForm(initial=initial_fields)
+    return render(request, template_name=template_name, context=context)
+
+
+@login_required
+def add_hangboard_view(request, username, *args, **kwargs):
+    template_name = 'workouts/add/hangboard.html'
+    context = dict()
+    context['title'] = 'Add Hangboard'
+    initial_fields = {'climber': request.user.pk}
+    if request.method == 'POST':
+        context['form'] = AddHangboardForm(request.POST, initial=initial_fields)
+        if context['form'].is_valid():
+            hangboard = context['form'].save()
+            return redirect('hangboard_detail', hangboard_id=hangboard.pk, username=username)
+    else:
+        context['form'] = AddHangboardForm(initial=initial_fields)
     return render(request, template_name=template_name, context=context)

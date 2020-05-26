@@ -7,13 +7,14 @@ from django.shortcuts import render
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
+from workouts.models import Exercise
+from workouts.models import Material
+from workouts.models import Hold
+from workouts.models import Hangboard
 
 
-@method_decorator(login_required, 'dispatch')
-class WorkoutListView(ListView):
-    model = Workout
+class BaseListView(ListView):
     paginate_by = 20
-    context_object_name = 'workouts'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,24 +24,55 @@ class WorkoutListView(ListView):
         return Workout.objects.filter(climber=self.request.user)
 
 
-@login_required
-def workout_detail_view(request, *args, **kwargs):
-    template_name = 'workouts/workout_detail.html'
+class WorkoutListView(BaseListView):
+    model = Workout
+    context_object_name = 'workouts'
+    template_name = 'workouts/get/workout_list.html'
+
+
+class ExerciseListView(BaseListView):
+    model = Exercise
+    context_object_name = 'exercises'
+    template_name = 'workouts/get/exercise_list.html'
+
+
+class MaterialListView(BaseListView):
+    model = Material
+    context_object_name = 'materials'
+    template_name = 'workouts/get/material_list.html'
+
+
+class HoldListView(BaseListView):
+    model = Hold
+    context_object_name = 'holds'
+    template_name = 'workouts/get/hold_list.html'
+
+
+class HangboardListView(BaseListView):
+    model = Hangboard
+    context_object_name = 'hangboards'
+    template_name = 'workouts/get/hangboard_list.html'
+
+
+def workout_detail_view(request, workout_id, *args, **kwargs):
+    template_name = 'workouts/get/workout_detail.html'
     context = dict()
     context['title'] = 'Workout Detail'
-    context['workout'] = Workout.objects.get(pk=kwargs.get('workout_id'))
-
-    if request.method == 'POST':
-        pass
-    else:
-        pass
+    context['workout'] = Workout.objects.get(pk=workout_id)
 
     return render(request, template_name=template_name, context=context)
 
 
-@method_decorator(login_required, 'dispatch')
+def hangboard_detail_view(request, username, hangboard_id, *args, **kwargs):
+    template_name = 'workouts/get/hangboard_detail.html'
+    context= dict()
+    context['title'] = 'Hangboard Detail'
+    context['hangboard'] = Hangboard.objects.get(pk=hangboard_id)
+
+    return render(request, template_name=template_name, context=context)
+
 class WorkoutSetDetailView(View):
-    template_name = 'workouts/workoutset_detail.html'
+    template_name = 'workouts/get/workoutset_detail.html'
 
     def get(self, request, *args, **kwargs):
         context = dict()

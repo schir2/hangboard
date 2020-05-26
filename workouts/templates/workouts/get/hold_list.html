@@ -1,0 +1,15 @@
+{%  extends 'main/base.html' %}
+
+{% block content %}
+    
+    <h1>Exercises</h1>
+    <ul>
+    {% for hold in holds %}
+        {{ hold.name }}
+    {% empty %}
+        <li>No exercises yet.</li>
+    {% endfor %}
+    <a href="{% url 'add_hold' hangboard=hangboard username=user.username %}">Add</a>
+    </ul>
+    
+{% endblock %}
