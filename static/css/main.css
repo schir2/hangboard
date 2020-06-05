@@ -355,4 +355,11 @@ header nav a {
   margin: 1em;
 }
 
+body #content {
+  margin: 5em;
+  display: grid;
+  text-align: left;
+  color: green;
+}
+
 /*# sourceMappingURL=main.css.map */

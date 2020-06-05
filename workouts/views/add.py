@@ -1,17 +1,20 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
 
-from workouts.forms import AddWorkoutForm
-from workouts.forms import AddWorkoutSetForm
-from workouts.forms import AddExerciseForm
-from workouts.forms import AddHangboardForm
+from workouts.forms.add import AddWorkoutForm
+from workouts.forms.add import AddWorkoutSetForm
+from workouts.forms.add import AddExerciseForm
+from workouts.forms.add import AddHangboardForm
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
+from workouts.models import Material
 
 
 @login_required
-def add_workout_view(request, *args, **kwargs):
+def add_workout_view(request):
     template_name = 'workouts/add/workout.html'
     context = dict()
     context['title'] = 'Add Workout'
@@ -22,7 +25,7 @@ def add_workout_view(request, *args, **kwargs):
                 climber=request.user,
                 **context['form'].cleaned_data
             )
-            return redirect('workout_detail', workout_id=workout.id, username=request.user.username)
+            return redirect('workout_detail', workout_id=workout.id)
         else:
             raise ValueError('Invalid Form Values')
     else:
@@ -31,7 +34,7 @@ def add_workout_view(request, *args, **kwargs):
 
 
 @login_required
-def add_workout_set_view(request, workout_id, username, previous=None, *args, **kwargs):
+def add_workout_set_view(request, workout_id, previous=None):
     template_name = 'workouts/add/workout_set.html'
     context = dict()
     context['title'] = 'Add Workout Set'
@@ -52,7 +55,7 @@ def add_workout_set_view(request, workout_id, username, previous=None, *args, **
                 **context['form'].cleaned_data
             )
             workout_set.save()
-            return redirect('workout_detail', workout_id=workout.pk, username=username)
+            return redirect('workout_detail', workout_id=workout.pk)
         else:
             raise ValueError('Invalid Form Values')
     else:
@@ -62,7 +65,7 @@ def add_workout_set_view(request, workout_id, username, previous=None, *args, **
 
 
 @login_required
-def add_exercise_view(request, username, *args, **kwargs):
+def add_exercise_view(request):
     template_name = 'workouts/add/exercise.html'
     context = dict()
     context['title'] = 'Add Exercise'
@@ -71,13 +74,14 @@ def add_exercise_view(request, username, *args, **kwargs):
         context['form'] = AddExerciseForm(request.POST, initial=initial_fields)
         if context['form'].is_valid():
             context['form'].save()
+        return redirect('exercise_list')
     else:
         context['form'] = AddExerciseForm(initial=initial_fields)
     return render(request, template_name=template_name, context=context)
 
 
 @login_required
-def add_hangboard_view(request, username, *args, **kwargs):
+def add_hangboard_view(request):
     template_name = 'workouts/add/hangboard.html'
     context = dict()
     context['title'] = 'Add Hangboard'
@@ -86,7 +90,17 @@ def add_hangboard_view(request, username, *args, **kwargs):
         context['form'] = AddHangboardForm(request.POST, initial=initial_fields)
         if context['form'].is_valid():
             hangboard = context['form'].save()
-            return redirect('hangboard_detail', hangboard_id=hangboard.pk, username=username)
+            return redirect('hangboard_detail', hangboard_id=hangboard.pk)
     else:
         context['form'] = AddHangboardForm(initial=initial_fields)
     return render(request, template_name=template_name, context=context)
+
+
+class AddMaterialView(LoginRequiredMixin, CreateView):
+    model = Material
+    template_name = 'workouts/add/material.html'
+    fields = ('name',)
+
+    def form_valid(self, form):
+        form.instance.climber = self.request.user
+        return super().form_valid(form)

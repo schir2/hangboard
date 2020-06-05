@@ -63,7 +63,7 @@ def workout_detail_view(request, workout_id, *args, **kwargs):
     return render(request, template_name=template_name, context=context)
 
 
-def hangboard_detail_view(request, username, hangboard_id, *args, **kwargs):
+def hangboard_detail_view(request, hangboard_id, *args, **kwargs):
     template_name = 'workouts/get/hangboard_detail.html'
     context= dict()
     context['title'] = 'Hangboard Detail'

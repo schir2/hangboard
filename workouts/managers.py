@@ -6,14 +6,13 @@ from django.utils import timezone
 class SimpleModelManager(Manager):
     use_in_migrations = True
 
-    def create_object(self, name: str, climber: str, slug: str = None, description: str = None, custom: bool = True,
+    def create_object(self, name: str, climber: str, description: str = None, custom: bool = True,
                       **extra_fields):
-        if not slug:
-            slug = slugify(name, allow_unicode=True)
+
         if not description:
             description = name
 
-        current_object = self.model(name=name, climber=climber, slug=slug, description=description, custom=custom,
+        current_object = self.model(name=name, climber=climber, description=description, custom=custom,
                                     **extra_fields)
         current_object.save(using=self._db)
         return current_object
@@ -27,7 +26,6 @@ class WorkoutManager(Manager):
             climber: str,
             hangboard,
             name: str = None,
-            slug: str = None,
             description: str = None,
             custom: bool = True,
             logged=str(timezone.now()),
@@ -35,8 +33,6 @@ class WorkoutManager(Manager):
     ):
 
         name = str(hangboard) if not name else name
-        if not slug:
-            slug = slugify(' '.join([name, str(logged)]), allow_unicode=True)
         if not description:
             description = name
 
@@ -44,7 +40,6 @@ class WorkoutManager(Manager):
             name=name,
             climber=climber,
             hangboard=hangboard,
-            slug=slug,
             description=description,
             custom=custom,
             logged=logged,

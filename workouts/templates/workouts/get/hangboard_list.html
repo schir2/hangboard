@@ -9,7 +9,7 @@
     {% empty %}
         <li>No hangboards yet.</li>
     {% endfor %}
-    <a href="{% url 'add_hangboard' username=user.username %}">Add</a>
+    <a href="{% url 'add_hangboard' %}">Add</a>
     </ul>
     
 {% endblock %}

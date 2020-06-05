@@ -18,19 +18,11 @@ class AutoAddClimberModelAdmin(admin.ModelAdmin):
             obj.climber = request.user
         super().save_model(request, obj, form, change)
 
-    readonly_fields = (
-        'updated',
-        'created',
-    )
-
 
 class SimpleModelAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
-        'slug',
         'description',
-        'created',
-        'updated',
         'climber',
     )
     fields = (
@@ -45,7 +37,6 @@ class SimpleModelAdmin(AutoAddClimberModelAdmin):
 class HoldAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
-        'slug',
         'hold_type',
         'max_fingers',
         'size',
@@ -53,13 +44,10 @@ class HoldAdmin(AutoAddClimberModelAdmin):
         'hangboard',
         'position_id',
         'description',
-        'created',
-        'updated',
         'climber'
     )
     fields = (
         'name',
-        'slug',
         'hold_type',
         'max_fingers',
         'size',
@@ -91,19 +79,15 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
 
     list_display = (
         'name',
-        'slug',
         'image',
         'material',
         'description',
-        'created',
-        'updated',
         'climber',
     )
     fields = (
         'pk',
         'name',
         'image',
-        'slug',
         'material',
         'description',
         'climber',
@@ -158,7 +142,6 @@ class TemplateWorkoutSetAdmin(BaseWorkoutSetAdmin):
 class BaseWorkoutAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
-        'slug',
         'description',
         'created',
         'updated',
@@ -168,7 +151,6 @@ class BaseWorkoutAdmin(AutoAddClimberModelAdmin):
     fields = (
         'name',
         'hangboard',
-        'slug',
         'description',
         'completed',
         'climber',

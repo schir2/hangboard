@@ -5,11 +5,11 @@
 <h1>{{ workout.name }}</h1>
 <h2>{{ workout.hangboard }}</h2>
 {{ form }}
-<a href="{% url 'add_workout_set' workout_id=workout.pk username=workout.climber.username %}">+</a>
+<a href="{% url 'add_workout_set' workout_id=workout.pk %}">+</a>
 {% for workoutset in workout.get_workout_sets %}
     {{ workoutset.pk }}
     {{ workoutset.exercise }}
-    <a href="{% url 'add_workout_set' workout_id=workout.pk previous=workoutset.pk username=workout.climber.username %}">+</a><br>
+    <a href="{% url 'add_workout_set' workout_id=workout.pk previous=workoutset.pk %}">+</a><br>
 {% empty %}
     <h1>No sets</h1>
 {% endfor %}

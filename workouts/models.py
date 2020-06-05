@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.shortcuts import reverse
 
 from workouts.managers import SimpleModelManager
 from workouts.managers import WorkoutManager
@@ -8,34 +9,30 @@ from workouts.managers import WorkoutSetManager
 
 
 class SimpleModel(models.Model):
-    slug = models.SlugField(blank=True, null=True)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')
     custom = models.BooleanField(default=True)
     climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     objects = SimpleModelManager()
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \
                f'name={self.name},' \
-               f'slug={self.slug},' \
                f'custom={self.custom},' \
-               f'climber={self.climber},' \
-               f'created={self.created},' \
-               f'updated={self.updated}'
+               f'climber={self.climber},'
 
     def __str__(self):
         return f'{self.name}'
 
     class Meta:
         abstract = True
+        unique_together = (('name', 'climber'))
 
 
 class Material(SimpleModel):
-    pass
+    def get_absolute_url(self):
+        return reverse('material_list')
 
 
 class HoldType(SimpleModel):
@@ -81,9 +78,10 @@ class Hold(SimpleModel):
 
 
 class BaseWorkout(SimpleModel):
-    slug = models.SlugField(unique=True)
     note = models.TextField(blank=True, null=True, default='')
     completed = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -92,7 +90,8 @@ class BaseWorkout(SimpleModel):
 class Workout(BaseWorkout):
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     logged = models.DateTimeField()
-    difficulty = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)],)
+    difficulty = models.PositiveIntegerField(blank=True, null=True,
+                                             validators=[MinValueValidator(1), MaxValueValidator(5)], )
 
     objects = WorkoutManager()
 
@@ -129,7 +128,8 @@ class BaseWorkoutSet(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     logged = models.DateTimeField()
-    previous = models.ForeignKey('self', null=True, blank=True, related_name='previous_workoutset', on_delete=models.DO_NOTHING)
+    previous = models.ForeignKey('self', null=True, blank=True, related_name='previous_workoutset',
+                                 on_delete=models.DO_NOTHING)
     climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     objects = WorkoutSetManager()
@@ -188,11 +188,15 @@ class BaseWorkoutSet(models.Model):
 
 class WorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE, null=True,
+                                  blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='workout_set_right_hold', on_delete=models.CASCADE, null=True,
+                                   blank=True)
 
 
 class TemplateWorkoutSet(BaseWorkoutSet):
     workout = models.ForeignKey(TemplateWorkout, on_delete=models.CASCADE)
-    left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE, null=True, blank=True)
-    right_hold = models.ForeignKey(Hold, related_name='template_workout_set_right_hold', on_delete=models.CASCADE, null=True, blank=True)
+    left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE,
+                                  null=True, blank=True)
+    right_hold = models.ForeignKey(Hold, related_name='template_workout_set_right_hold', on_delete=models.CASCADE,
+                                   null=True, blank=True)

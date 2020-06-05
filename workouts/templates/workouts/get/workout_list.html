@@ -5,13 +5,13 @@
 <h1>Workouts</h1>
 <ul>
 {% for workout in workouts %}
-    <a href="{% url 'workout_detail' workout_id=workout.pk username=workout.climber.username %}">
+    <a href="{% url 'workout_detail' workout_id=workout.pk %}">
         <li>{{ workout.name }}</li>
     </a>
 {% empty %}
     <li>No workouts yet.</li>
 {% endfor %}
-<a href="{% url 'add_workout' username=user.username %}">Add</a>
+<a href="{% url 'add_workout' %}">Add</a>
 </ul>
 
 {% endblock %}

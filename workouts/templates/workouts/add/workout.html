@@ -1,6 +1,12 @@
-<h1>Select Your Hangboard</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Next</button>
-</form>
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1>Select Your Hangboard</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Next</button>
+    </form>
+
+{% endblock %}

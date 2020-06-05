@@ -20,3 +20,12 @@ header{
     }
   }
 }
+
+body{
+  #content{
+    margin: 5em;
+    display:grid;
+    text-align: left;
+    color:green;
+  }
+}

@@ -72,9 +72,8 @@ class AddExerciseForm(ModelForm):
         model = Exercise
         fields = (
             'name',
-            'climber',
         )
-
+        
 
 class AddHangboardForm(ModelForm):
 
@@ -83,5 +82,4 @@ class AddHangboardForm(ModelForm):
         fields = (
             'name',
             'material',
-            'climber',
         )
