@@ -1,14 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from django.utils.decorators import method_decorator
 from django.views import View
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
 from workouts.models import Exercise
-from workouts.models import Material
 from workouts.models import Hold
 from workouts.models import Hangboard
 
@@ -34,18 +31,6 @@ class ExerciseListView(BaseListView):
     model = Exercise
     context_object_name = 'exercises'
     template_name = 'workouts/get/exercise_list.html'
-
-
-class MaterialListView(BaseListView):
-    model = Material
-    context_object_name = 'materials'
-    template_name = 'workouts/get/material_list.html'
-
-
-class HoldListView(BaseListView):
-    model = Hold
-    context_object_name = 'holds'
-    template_name = 'workouts/get/hold_list.html'
 
 
 class HangboardListView(BaseListView):

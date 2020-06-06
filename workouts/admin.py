@@ -6,7 +6,6 @@ from workouts.models import HoldType
 from workouts.models import Workout
 from workouts.models import WorkoutSet
 from workouts.models import Exercise
-from workouts.models import Material
 from workouts.models import TemplateWorkout
 from workouts.models import TemplateWorkoutSet
 
@@ -64,11 +63,6 @@ class ExerciseAdmin(SimpleModelAdmin):
     pass
 
 
-@admin.register(Material)
-class MaterialAdmin(SimpleModelAdmin):
-    pass
-
-
 @admin.register(HoldType)
 class HoldTypeAdmin(SimpleModelAdmin):
     pass
@@ -80,7 +74,6 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
     list_display = (
         'name',
         'image',
-        'material',
         'description',
         'climber',
     )
@@ -88,7 +81,6 @@ class HangboardAdmin(AutoAddClimberModelAdmin):
         'pk',
         'name',
         'image',
-        'material',
         'description',
         'climber',
     )

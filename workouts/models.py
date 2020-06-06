@@ -1,3 +1,6 @@
+from abc import ABCMeta
+from abc import abstractmethod
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -9,6 +12,14 @@ from workouts.managers import WorkoutSetManager
 
 
 class SimpleModel(models.Model):
+    model_name = NotImplemented
+    url_name = 'home'
+    url_params = tuple()
+
+    def get_absolute_url(self):
+        args = [self.__getattribute__(url_param) for url_param in self.url_params]
+        return reverse(self.url_name, args =args)
+    
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')
     custom = models.BooleanField(default=True)
@@ -22,7 +33,7 @@ class SimpleModel(models.Model):
                f'custom={self.custom},' \
                f'climber={self.climber},'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.name}'
 
     class Meta:
@@ -30,26 +41,25 @@ class SimpleModel(models.Model):
         unique_together = (('name', 'climber'))
 
 
-class Material(SimpleModel):
-    def get_absolute_url(self):
-        return reverse('material_list')
-
-
 class HoldType(SimpleModel):
-    pass
+    url_name = 'hold_list'
+    model_name = 'hold'
 
 
 class Exercise(SimpleModel):
-    pass
+    url_name = 'exercise_list'
+    model_name = 'exercise'
 
 
 class Hangboard(SimpleModel):
+    url_name = 'hangboard_detail'
+    url_params = ('pk',)
+    model_name = 'hangboard'
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/uploads/<username>/hangboards/<filename>
         return f'uploads/{instance.climber.username}/hangboards/{filename}'
-
-    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    
     image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
 
     class Meta:
@@ -57,10 +67,14 @@ class Hangboard(SimpleModel):
 
 
 class Hold(SimpleModel):
+    model_name = 'hold'
+    url_name = 'hold'
+    
     LEFT = 'L'
     MIDDLE = 'M'
     RIGHT = 'R'
     POSITIONS = ((LEFT, 'left'), (MIDDLE, 'middle'), (RIGHT, 'right'),)
+
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     hold_type = models.ForeignKey(HoldType, on_delete=models.CASCADE)
     size = models.PositiveIntegerField(default=20, null=True, blank=True)
@@ -69,12 +83,15 @@ class Hold(SimpleModel):
     position_id = models.PositiveIntegerField(default=1)
     position = models.CharField(max_length=1, choices=POSITIONS, default=MIDDLE)
 
-    class Meta:
-        unique_together = (('position_id', 'hangboard',),)
+    def get_absolute_url(self):
+        return reverse(self.url_name)
 
     def is_same_type(self, other) -> bool:
         return all((self.hold_type_id == other.hold_type_id, self.max_fingers == other.max_fingers,
                     self.size == other.size, self.angle == other.angle,))
+
+    class Meta:
+        unique_together = (('position_id', 'hangboard',),)
 
 
 class BaseWorkout(SimpleModel):
@@ -88,10 +105,12 @@ class BaseWorkout(SimpleModel):
 
 
 class Workout(BaseWorkout):
+    url_name = 'workout_detail'
+    model_name = 'workout'
+    
     hangboard = models.ForeignKey(Hangboard, on_delete=models.CASCADE)
     logged = models.DateTimeField()
-    difficulty = models.PositiveIntegerField(blank=True, null=True,
-                                             validators=[MinValueValidator(1), MaxValueValidator(5)], )
+    difficulty = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(5)],)
 
     objects = WorkoutManager()
 
@@ -110,12 +129,15 @@ class Workout(BaseWorkout):
 
 
 class TemplateWorkout(BaseWorkout):
-    pass
+    model_name = 'template_workout'
+    url_name = 'template_workout_detail'
 
 
-class BaseWorkoutSet(models.Model):
+class BaseWorkoutSet(SimpleModel):
+
     left_hold = NotImplemented
     right_hold = NotImplemented
+
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
     left_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
     right_fingers = models.PositiveIntegerField(default=4, validators=[MinValueValidator(1), MaxValueValidator(5)])
@@ -130,13 +152,13 @@ class BaseWorkoutSet(models.Model):
     logged = models.DateTimeField()
     previous = models.ForeignKey('self', null=True, blank=True, related_name='previous_workoutset',
                                  on_delete=models.DO_NOTHING)
-    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     objects = WorkoutSetManager()
 
     class Meta:
         abstract = True
         get_latest_by = ('previous',)
+
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \
@@ -187,6 +209,9 @@ class BaseWorkoutSet(models.Model):
 
 
 class WorkoutSet(BaseWorkoutSet):
+    model_name = 'workout_set'
+    url_name = 'workout_set'
+
     workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
     left_hold = models.ForeignKey(Hold, related_name='workout_set_left_hold', on_delete=models.CASCADE, null=True,
                                   blank=True)
@@ -195,6 +220,9 @@ class WorkoutSet(BaseWorkoutSet):
 
 
 class TemplateWorkoutSet(BaseWorkoutSet):
+    model_name = 'template_workout_set'
+    url_name = 'template_workout_set'
+
     workout = models.ForeignKey(TemplateWorkout, on_delete=models.CASCADE)
     left_hold = models.ForeignKey(Hold, related_name='template_workout_set_left_hold', on_delete=models.CASCADE,
                                   null=True, blank=True)

@@ -4,7 +4,6 @@ from climbers.models import Climber
 
 from workouts.models import Hold
 from workouts.models import Hangboard
-from workouts.models import Material
 from workouts.models import HoldType
 from workouts.models import Workout
 from workouts.models import WorkoutSet
@@ -24,14 +23,9 @@ class MainTestCase(TestCase):
 
     def setUp(self):
         self.climber = self.create_climber()
-        self.material = Material.objects.create_object(
-            name='Test Material',
-            climber=self.climber,
-        )
         self.hangboard = Hangboard.objects.create(
             name='Test Hangboard',
             climber=self.climber,
-            material=self.material,
         )
         self.exercise = Exercise.objects.create(name='Pull Up', climber=self.climber)
         self.crimp = HoldType.objects.create(name='Test Crimp', climber=self.climber)

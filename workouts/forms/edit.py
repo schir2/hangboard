@@ -31,7 +31,6 @@ class EditHangboardForm(ModelForm):
         fields = (
             'pk',
             'name',
-            'material',
             'climber',
         )
 """

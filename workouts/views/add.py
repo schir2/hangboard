@@ -1,3 +1,6 @@
+from abc import abstractmethod
+from abc import ABCMeta
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,12 +8,42 @@ from django.views.generic.edit import CreateView
 
 from workouts.forms.add import AddWorkoutForm
 from workouts.forms.add import AddWorkoutSetForm
-from workouts.forms.add import AddExerciseForm
-from workouts.forms.add import AddHangboardForm
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
-from workouts.models import Material
+from workouts.models import Exercise
+from workouts.models import Hangboard
+from workouts.models import HoldType
+
+
+class AddSimpleModelView(LoginRequiredMixin, CreateView, metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def model(self):
+        pass
+
+    template_name = 'workouts/add/simple_model.html'
+    fields = ('name',)
+
+    def form_valid(self, form):
+        form.instance.climber = self.request.user
+        return super().form_valid(form)
+
+
+class AddExerciseView(AddSimpleModelView):
+    model = Exercise
+
+
+class AddHangboardView(AddSimpleModelView):
+    model = Hangboard
+
+
+class AddHoldTypeView(AddSimpleModelView):
+    model = HoldType
+
+
+class AddHangboardView(AddSimpleModelView):
+    model = Hangboard
 
 
 @login_required
@@ -62,45 +95,3 @@ def add_workout_set_view(request, workout_id, previous=None):
         context['form'] = AddWorkoutSetForm(initial=initial_fields)
 
     return render(request, template_name=template_name, context=context)
-
-
-@login_required
-def add_exercise_view(request):
-    template_name = 'workouts/add/exercise.html'
-    context = dict()
-    context['title'] = 'Add Exercise'
-    initial_fields = {'climber': request.user.pk}
-    if request.method == 'POST':
-        context['form'] = AddExerciseForm(request.POST, initial=initial_fields)
-        if context['form'].is_valid():
-            context['form'].save()
-        return redirect('exercise_list')
-    else:
-        context['form'] = AddExerciseForm(initial=initial_fields)
-    return render(request, template_name=template_name, context=context)
-
-
-@login_required
-def add_hangboard_view(request):
-    template_name = 'workouts/add/hangboard.html'
-    context = dict()
-    context['title'] = 'Add Hangboard'
-    initial_fields = {'climber': request.user.pk}
-    if request.method == 'POST':
-        context['form'] = AddHangboardForm(request.POST, initial=initial_fields)
-        if context['form'].is_valid():
-            hangboard = context['form'].save()
-            return redirect('hangboard_detail', hangboard_id=hangboard.pk)
-    else:
-        context['form'] = AddHangboardForm(initial=initial_fields)
-    return render(request, template_name=template_name, context=context)
-
-
-class AddMaterialView(LoginRequiredMixin, CreateView):
-    model = Material
-    template_name = 'workouts/add/material.html'
-    fields = ('name',)
-
-    def form_valid(self, form):
-        form.instance.climber = self.request.user
-        return super().form_valid(form)
