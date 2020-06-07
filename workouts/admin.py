@@ -26,7 +26,6 @@ class SimpleModelAdmin(AutoAddClimberModelAdmin):
     )
     fields = (
         'name',
-        'slug',
         'description',
         'climber',
     )

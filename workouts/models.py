@@ -1,6 +1,3 @@
-from abc import ABCMeta
-from abc import abstractmethod
-
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -158,7 +155,6 @@ class BaseWorkoutSet(SimpleModel):
     class Meta:
         abstract = True
         get_latest_by = ('previous',)
-
 
     def __repr__(self):
         return f'{self.__class__.__name__}(' \

@@ -9,12 +9,21 @@
     1. Weight System (Metric/Imperial)
     2. set.rest_interval
     3. hangboard
-    4. workout_set completed by default
-4. Add User Stats
-    1. Weight
-    2. Height
-    3. Age
-    4. Gender
 5. Update workout holds to the hangboard being used.
 6. Sort holds based on left or right hand
-7. Rename Account to User/Climber
+
+## CRUD
+1. Workout Template
+    1. **Add**: redirect to workout detail
+    2. **Edit**: redirect to workout detail
+    3. **Delete**: redirect to workout list 
+2. Workout Set/Template
+    1. **Add:** redirect to workout detail
+    2. **Edit:** redirect to workout detail
+    3. **Delete:** redirect to workout detail
+3. Simple Model
+    1. **Add**: redirect to previous page
+    2. **Edit**: redirect to previous page
+    3. **Delete**: redirect to previous page
+    
+## 
