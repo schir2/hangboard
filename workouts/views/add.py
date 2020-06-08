@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView
 
+from dal import autocomplete
+
 from workouts.forms.add import AddWorkoutForm
 from workouts.forms.add import AddWorkoutSetForm
 
@@ -42,8 +44,12 @@ class AddHoldTypeView(AddSimpleModelView):
     model = HoldType
 
 
-class AddHangboardView(AddSimpleModelView):
-    model = Hangboard
+class AutocompleteExerciseView(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = Exercise.objects.all()
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+        return qs
 
 
 @login_required

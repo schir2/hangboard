@@ -5,6 +5,8 @@ from workouts.views.add import add_workout_view
 from workouts.views.add import AddExerciseView
 from workouts.views.add import AddHangboardView
 
+from workouts.views.add import AutocompleteExerciseView
+
 from workouts.views.edit import edit_exercise_view
 
 from workouts.views.get import WorkoutListView
@@ -23,6 +25,8 @@ urlpatterns = [
     path('add_exercise', AddExerciseView.as_view(), name='add_exercise'),
     path('add_workout', add_workout_view, name='add_workout'),
     path('add_hangboard', AddHangboardView.as_view(), name='add_hangboard'),
+
+    path('autocomplete_exercise', AutocompleteExerciseView.as_view(create_field='name'), name='autocomplete_exercise'),
 
     path('edit_exercise/<int:exercise_id>/', edit_exercise_view, name='edit_exercise'),
 

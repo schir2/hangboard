@@ -3,6 +3,8 @@ from django import forms
 from django.utils import timezone
 from django.forms.widgets import DateTimeInput
 
+from dal import autocomplete
+
 from workouts.models import WorkoutSet, Workout, Exercise
 from climbers.models import Climber, Preference, Measurement
 
@@ -40,7 +42,7 @@ class AddWorkoutSetForm(ModelForm):
 
         if workout_sets and initial['previous']:
             previous = WorkoutSet.objects.get(pk=initial['previous'])
-            self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
+            #self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
             self.fields['weight'] = forms.IntegerField(initial=previous.weight)
             self.fields['rest_between'] = forms.IntegerField(initial=previous.rest_between)
             self.fields['rest_after'] = forms.IntegerField(initial=previous.rest_after)
@@ -64,3 +66,6 @@ class AddWorkoutSetForm(ModelForm):
             'duration',
             'rest_after',
         )
+        widgets = {
+            'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise')
+        }

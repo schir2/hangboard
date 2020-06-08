@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.shortcuts import reverse
+from django_currentuser.db.models import CurrentUserField
 
 from workouts.managers import SimpleModelManager
 from workouts.managers import WorkoutManager
@@ -20,7 +21,7 @@ class SimpleModel(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')
     custom = models.BooleanField(default=True)
-    climber = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    climber = CurrentUserField()
 
     objects = SimpleModelManager()
 
@@ -46,6 +47,10 @@ class HoldType(SimpleModel):
 class Exercise(SimpleModel):
     url_name = 'exercise_list'
     model_name = 'exercise'
+
+    def save_model(self, request, obj, form, change):
+        obj.climber = request.user
+        super().save(request, obj, form, change)
 
 
 class Hangboard(SimpleModel):
