@@ -21,6 +21,9 @@ class AddWorkoutForm(ModelForm):
             'name',
             'logged',
         )
+        widgets = {
+            'hangboard': autocomplete.ModelSelect2(url='autocomplete_hangboard')
+        }
 
 
 class AddWorkoutSetForm(ModelForm):
@@ -42,7 +45,7 @@ class AddWorkoutSetForm(ModelForm):
 
         if workout_sets and initial['previous']:
             previous = WorkoutSet.objects.get(pk=initial['previous'])
-            #self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
+            self.fields['exercise'] = forms.ModelChoiceField(queryset=exercises, initial=previous.exercise)
             self.fields['weight'] = forms.IntegerField(initial=previous.weight)
             self.fields['rest_between'] = forms.IntegerField(initial=previous.rest_between)
             self.fields['rest_after'] = forms.IntegerField(initial=previous.rest_after)

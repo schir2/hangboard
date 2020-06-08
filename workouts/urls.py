@@ -2,10 +2,10 @@ from django.urls import path, include
 
 from workouts.views.add import add_workout_set_view
 from workouts.views.add import add_workout_view
-from workouts.views.add import AddExerciseView
-from workouts.views.add import AddHangboardView
 
-from workouts.views.add import AutocompleteExerciseView
+from workouts.views.add import AutoCompleteExerciseView
+from workouts.views.add import AutoCompleteHangboardView
+from workouts.views.add import AutoCompleteHoldTypeView
 
 from workouts.views.edit import edit_exercise_view
 
@@ -22,11 +22,11 @@ urlpatterns = [
     path('hangboards', HangboardListView.as_view(), name='hangboard_list'),
     path('hangboards/hangboard=<int:hangboard_id>/', hangboard_detail_view, name='hangboard_detail'),
 
-    path('add_exercise', AddExerciseView.as_view(), name='add_exercise'),
     path('add_workout', add_workout_view, name='add_workout'),
-    path('add_hangboard', AddHangboardView.as_view(), name='add_hangboard'),
 
-    path('autocomplete_exercise', AutocompleteExerciseView.as_view(create_field='name'), name='autocomplete_exercise'),
+    path('autocomplete_exercise', AutoCompleteExerciseView.as_view(create_field='name'), name='autocomplete_exercise'),
+    path('autocomplete_hold_typ', AutoCompleteHoldTypeView.as_view(create_field='name'), name='autocomplete_hold_type'),
+    path('autocomplete_hangboard', AutoCompleteHangboardView.as_view(create_field='name'), name='autocomplete_hangboard'),
 
     path('edit_exercise/<int:exercise_id>/', edit_exercise_view, name='edit_exercise'),
 
