@@ -25,7 +25,7 @@ urlpatterns = [
     path('add_workout', add_workout_view, name='add_workout'),
 
     path('autocomplete_exercise', AutoCompleteExerciseView.as_view(create_field='name'), name='autocomplete_exercise'),
-    path('autocomplete_hold_typ', AutoCompleteHoldTypeView.as_view(create_field='name'), name='autocomplete_hold_type'),
+    path('autocomplete_hold_type', AutoCompleteHoldTypeView.as_view(create_field='name'), name='autocomplete_hold_type'),
     path('autocomplete_hangboard', AutoCompleteHangboardView.as_view(create_field='name'), name='autocomplete_hangboard'),
 
     path('edit_exercise/<int:exercise_id>/', edit_exercise_view, name='edit_exercise'),
