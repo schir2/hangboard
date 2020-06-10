@@ -5,7 +5,7 @@ from django.forms.widgets import DateTimeInput
 
 from dal import autocomplete
 
-from workouts.models import WorkoutSet, Workout, Exercise
+from workouts.models import WorkoutSet, Workout, Exercise, Hold
 from climbers.models import Climber, Preference, Measurement
 
 
@@ -70,5 +70,5 @@ class AddWorkoutSetForm(ModelForm):
             'rest_after',
         )
         widgets = {
-            'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise')
+            'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise'),
         }
