@@ -3,7 +3,9 @@ from django import forms
 from django.utils import timezone
 from django.forms.widgets import DateTimeInput
 
-from workouts.models import WorkoutSet, Workout, Exercise
+from dal import autocomplete
+
+from workouts.models import WorkoutSet, Workout, Exercise, Hold
 from climbers.models import Climber, Preference, Measurement
 
 
@@ -19,6 +21,9 @@ class AddWorkoutForm(ModelForm):
             'name',
             'logged',
         )
+        widgets = {
+            'hangboard': autocomplete.ModelSelect2(url='autocomplete_hangboard')
+        }
 
 
 class AddWorkoutSetForm(ModelForm):
@@ -64,3 +69,6 @@ class AddWorkoutSetForm(ModelForm):
             'duration',
             'rest_after',
         )
+        widgets = {
+            'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise'),
+        }

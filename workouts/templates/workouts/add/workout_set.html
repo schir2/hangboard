@@ -1,21 +1,49 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block content %}
 
 <form method="post">
     {% csrf_token %}
-    {% for field in form %}
-        <div class="fieldWrapper">
-            {{ field.errors }}
-            {{ field.label_tag }} {{ field }}
+    {{ form.as_p }}
+    <table style="display: none">
+        {{ view.formset.empty_form }}
+    </table>
 
-            {{ field.field }}
-            {% if field.help_text %}
-            <p class="help">{{ field.help_text|safe }}</p>
-            {% endif %}
-        </div>
-    {% endfor %}
-    <button type="submit">Add</button>
+    <table>
+        {{ view.formset }}
+    </table>
+
+    <span id="add-form" class="button">Add form</span>
+
+    <input type="submit" />
 </form>
 
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{{ form.media }}
+
+<script>
+(function($) {
+    $('#add-form').click(function() {
+        var index = $('#id_inline_test_models-TOTAL_FORMS').val()
+        var newTable = $('#id_inline_test_models-__prefix__-DELETE').parents('table').clone()
+        newTable.find(':input').each(function() {
+            for (attr of ['name', 'id'])
+                $(this).attr(
+                    attr,
+                    $(this).attr(attr).replace('__prefix__', index)
+                )
+        })
+        newTable.insertBefore($(this))
+        $('#id_inline_test_models-TOTAL_FORMS').val(
+            parseInt($('#id_inline_test_models-TOTAL_FORMS').val()) + 1
+        )
+        newTable.slideDown()
+    })
+})($)
+</script>
 {% endblock %}
