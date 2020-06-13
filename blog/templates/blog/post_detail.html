@@ -1,0 +1,8 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+    <a href="{% url 'post_update' slug=post.slug %}">Update</a>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content|safe }}</p>
+    <span>{{ post.author }}</span>
+{% endblock %}

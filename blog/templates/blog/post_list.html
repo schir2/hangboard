@@ -1,0 +1,11 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <a href="{% url 'post_create' %}">Add Post</a>
+    {% for post in posts %}
+        <a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a>
+        <a href="{% url 'post_delete' slug=post.slug %}">Delete</a>
+    {% endfor %}
+
+{% endblock %}
