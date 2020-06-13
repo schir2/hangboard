@@ -54,7 +54,7 @@ class AddWorkoutSetForm(ModelForm):
         else:
             self.fields['weight'] = forms.IntegerField(initial=measurement.get_current_weight())
             self.fields['rest_between'] = forms.IntegerField(initial=preference.rest_between)
-            self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
+            #self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
             self.fields['right_hold'] = forms.ModelChoiceField(queryset=hold_set)
             self.fields['rest_after'] = forms.IntegerField(initial=preference.rest_after)
 
@@ -71,4 +71,5 @@ class AddWorkoutSetForm(ModelForm):
         )
         widgets = {
             'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise'),
+            'left_hold': autocomplete.ModelSelect2(url='autocomplete_hold'),
         }

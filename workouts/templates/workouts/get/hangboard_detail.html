@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+
+    <h1>{{ hangboard.name }}</h1>
+    {{ form }}
+    <a href="{% url 'add_hold' workout_id=workout.pk %}">+</a>
+    {% for hold in hangboard.hold_set %}
+        {{ hold.pk }}
+        {{ hold.name }}
+    {% empty %}
+        <h1>No sets</h1>
+    {% endfor %}
+    <p>Date: {{ workout.updated }}</p>
+
+{% endblock %}

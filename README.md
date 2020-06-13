@@ -26,4 +26,8 @@
     2. **Edit**: redirect to previous page
     3. **Delete**: redirect to previous page
     
-## 
+## Views
+
+1. Add Hangboard View that allows for adding holds.
+2. Upon creating hangboard, redirect to hangboard detail
+3. Upon creating hold redirect to hangboard detail.
