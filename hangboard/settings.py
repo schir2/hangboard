@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'climbers.apps.ClimbersConfig',
     'workouts.apps.WorkoutsConfig',
     'main.apps.MainConfig',
+    'blog.apps.BlogConfig',
 ]
 
 MIDDLEWARE = [
