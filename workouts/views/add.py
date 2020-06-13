@@ -17,6 +17,7 @@ from workouts.models import WorkoutSet
 from workouts.models import Exercise
 from workouts.models import Hangboard
 from workouts.models import HoldType
+from workouts.models import Hold
 
 
 class AddSimpleModelView(LoginRequiredMixin, CreateView, metaclass=ABCMeta):
@@ -31,6 +32,9 @@ class AddSimpleModelView(LoginRequiredMixin, CreateView, metaclass=ABCMeta):
     def form_valid(self, form):
         form.instance.climber = self.request.user
         return super().form_valid(form)
+
+class AddHoldView(AddSimpleModelView):
+    model = Hold
 
 
 class AutoCompleteSimpleView(autocomplete.Select2QuerySetView, metaclass=ABCMeta):
@@ -59,22 +63,19 @@ class AutoCompleteHangboardView(AutoCompleteSimpleView):
     model = Hangboard
 
 
-class AutoCompleteLeftHold(autocomplete.Select2QuerySetView):
+class AutoCompleteHoldView(autocomplete.Select2QuerySetView):
+    model = Hold
     # TODO Implement filtering by hangboard and ordering
+
     def get_queryset(self):
         qs = self.model.objects.filter(Q(custom=False) | Q(climber=self.request.user))
         if self.q:
             qs = qs.filter(Q(name__istartswith=self.q))
         return qs
 
-
-class AutoCompleteRightHold(autocomplete.Select2QuerySetView):
-    # TODO Implement filtering by hangboard and ordering
-    def get_queryset(self):
-        qs = self.model.objects.filter(Q(custom=False) | Q(climber=self.request.user))
-        if self.q:
-            qs = qs.filter(Q(name__istartswith=self.q))
-        return qs
+    def post(self, request, *args, **kwargs):
+        # TODO Add proper redirect to add_hold
+        return redirect('workout_list')
 
 
 @login_required
