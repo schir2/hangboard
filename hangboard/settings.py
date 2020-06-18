@@ -10,7 +10,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'dal',
     'dal_select2',
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,6 +23,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
+    'ckeditor',
+    'ckeditor_uploader',
 
     'climbers.apps.ClimbersConfig',
     'workouts.apps.WorkoutsConfig',
@@ -126,3 +129,11 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_EMAIL_REQUIRED = True
 LOGIN_REDIRECT_URL = '/'
+
+
+# Ckeditor Settings
+CKEDITOR_UPLOAD_PATH = 'uploads'
+CKEDITOR_CONFIGS = {
+    'default': {
+    },
+}
