@@ -1,4 +1,5 @@
 {% extends 'main/base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -9,4 +10,11 @@
         <button type="submit">Next</button>
     </form>
 
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{{ form.media }}
+
+<script src="{% static 'autocomplete_light/select2.js' %}"></script>
 {% endblock %}

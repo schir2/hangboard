@@ -18,6 +18,7 @@
             <a href="{% url 'home' %}">hangboard.io</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'workout_list' %}">Workouts</a>
+                <a href="{% url 'hangboard_list' %}">Hangboards</a>
                 <a href="{% url 'profile' %}">Profile</a>
                 <a href="{% url 'preferences' %}">Preferences</a>
                 <a href="{% url 'measurements' %}">Measurements</a>

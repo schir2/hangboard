@@ -1,4 +1,3 @@
-from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from django.views import View
 from django.shortcuts import render
@@ -10,6 +9,9 @@ from workouts.models import Hold
 from workouts.models import Hangboard
 
 
+#TODO Create a base template for all list views.
+
+
 class BaseListView(ListView):
     paginate_by = 20
 
@@ -18,7 +20,7 @@ class BaseListView(ListView):
         return context
 
     def get_queryset(self):
-        return Workout.objects.filter(climber=self.request.user)
+        return self.model.objects.filter(climber=self.request.user)
 
 
 class WorkoutListView(BaseListView):

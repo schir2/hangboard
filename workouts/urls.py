@@ -2,6 +2,7 @@ from django.urls import path, include
 
 from workouts.views.add import add_workout_set_view
 from workouts.views.add import add_workout_view
+from workouts.views.add import AddHangboardView
 from workouts.views.add import AddHoldView
 
 from workouts.views.add import AutoCompleteExerciseView
@@ -25,7 +26,8 @@ urlpatterns = [
     path('hangboards/hangboard=<int:hangboard_id>/', hangboard_detail_view, name='hangboard_detail'),
 
     path('add_workout', add_workout_view, name='add_workout'),
-    path('add_hold', AddHoldView, name='add_hold'),
+    path('add_hangboard', AddHangboardView.as_view(), name='add_hangboard'),
+    path('hangboard=<int:hangboard>/add_hold', AddHoldView.as_view(), name='add_hold'),
 
     path('autocomplete_exercise', AutoCompleteExerciseView.as_view(create_field='name'), name='autocomplete_exercise'),
     path('autocomplete_hold_type', AutoCompleteHoldTypeView.as_view(create_field='name'), name='autocomplete_hold_type'),

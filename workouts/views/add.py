@@ -11,6 +11,7 @@ from dal import autocomplete
 
 from workouts.forms.add import AddWorkoutForm
 from workouts.forms.add import AddWorkoutSetForm
+from workouts.forms.add import AddHoldForm
 
 from workouts.models import Workout
 from workouts.models import WorkoutSet
@@ -33,8 +34,24 @@ class AddSimpleModelView(LoginRequiredMixin, CreateView, metaclass=ABCMeta):
         form.instance.climber = self.request.user
         return super().form_valid(form)
 
+
 class AddHoldView(AddSimpleModelView):
     model = Hold
+    fields = (
+        '__all__'
+    )
+
+    def get_form(self, form_class=None):
+        return AddHoldForm()
+
+    def form_valid(self, form):
+        form.instance.climber = self.request.user
+        print(self.kwargs)
+        return super().form_valid(form)
+
+
+class AddHangboardView(AddSimpleModelView):
+    model = Hangboard
 
 
 class AutoCompleteSimpleView(autocomplete.Select2QuerySetView, metaclass=ABCMeta):

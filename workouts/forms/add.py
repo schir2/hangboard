@@ -73,3 +73,23 @@ class AddWorkoutSetForm(ModelForm):
             'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise'),
             'left_hold': autocomplete.ModelSelect2(url='autocomplete_hold'),
         }
+
+
+class AddHoldForm(ModelForm):
+
+    class Meta:
+        model = Hold
+        fields = (
+            'name',
+            'description',
+            'hold_type',
+            'size',
+            'angle',
+            'max_fingers',
+            'position_id',
+            'position',
+
+        )
+        widgets = {
+            'hold_type': autocomplete.ModelSelect2(url='autocomplete_hold_type')
+        }
