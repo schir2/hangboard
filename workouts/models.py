@@ -37,6 +37,7 @@ class SimpleModel(models.Model):
     class Meta:
         abstract = True
         unique_together = (('name', 'climber'))
+        get_latest_by = ('updated',)
 
 
 class HoldType(SimpleModel):
@@ -94,6 +95,7 @@ class Hold(SimpleModel):
 
     class Meta:
         unique_together = (('position_id', 'hangboard',),)
+        get_latest_by = ('updated',)
 
 
 class BaseWorkout(SimpleModel):

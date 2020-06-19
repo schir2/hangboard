@@ -2,10 +2,11 @@ from django.forms import ModelForm
 from django import forms
 from django.utils import timezone
 from django.forms.widgets import DateTimeInput
+from django.shortcuts import get_object_or_404
 
 from dal import autocomplete
 
-from workouts.models import WorkoutSet, Workout, Exercise, Hold
+from workouts.models import WorkoutSet, Workout, Exercise, Hold, Hangboard
 from climbers.models import Climber, Preference, Measurement
 
 
@@ -54,7 +55,7 @@ class AddWorkoutSetForm(ModelForm):
         else:
             self.fields['weight'] = forms.IntegerField(initial=measurement.get_current_weight())
             self.fields['rest_between'] = forms.IntegerField(initial=preference.rest_between)
-            #self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
+            self.fields['left_hold'] = forms.ModelChoiceField(queryset=hold_set)
             self.fields['right_hold'] = forms.ModelChoiceField(queryset=hold_set)
             self.fields['rest_after'] = forms.IntegerField(initial=preference.rest_after)
 
@@ -83,11 +84,13 @@ class AddHoldForm(ModelForm):
             'name',
             'description',
             'hold_type',
+            'hangboard',
             'size',
             'angle',
             'max_fingers',
             'position_id',
             'position',
+            'climber',
 
         )
         widgets = {

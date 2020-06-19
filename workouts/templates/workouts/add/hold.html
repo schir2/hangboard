@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h1>Add Hold</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" name="save">
+    </form>
+
+{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+{{ form.media }}
+
+<script src="{% static 'autocomplete_light/select2.js' %}"></script>
+{% endblock %}

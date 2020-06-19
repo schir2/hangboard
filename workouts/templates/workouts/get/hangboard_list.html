@@ -5,7 +5,7 @@
     <h1>Hangboards</h1>
     <ul>
     {% for hangboard in hangboards %}
-        {{ hangboard.name }}
+        <a href="{% url 'hangboard_detail' hangboard_id=hangboard.pk %}">{{ hangboard.name }}</a>
     {% empty %}
         <li>No hangboards yet.</li>
     {% endfor %}

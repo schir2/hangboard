@@ -5,11 +5,7 @@ from django.shortcuts import render
 from workouts.models import Workout
 from workouts.models import WorkoutSet
 from workouts.models import Exercise
-from workouts.models import Hold
 from workouts.models import Hangboard
-
-
-#TODO Create a base template for all list views.
 
 
 class BaseListView(ListView):
@@ -57,6 +53,7 @@ def hangboard_detail_view(request, hangboard_id, *args, **kwargs):
     context['hangboard'] = Hangboard.objects.get(pk=hangboard_id)
 
     return render(request, template_name=template_name, context=context)
+
 
 class WorkoutSetDetailView(View):
     template_name = 'workouts/get/workoutset_detail.html'
