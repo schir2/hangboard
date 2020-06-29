@@ -5,11 +5,11 @@
     <h1>Hangboards</h1>
     <ul>
     {% for hangboard in hangboards %}
-        <a href="{% url 'hangboard_detail' hangboard_id=hangboard.pk %}">{{ hangboard.name }}</a>
+        <a href="{% url 'workouts:hangboard_detail' hangboard_id=hangboard.pk %}">{{ hangboard.name }}</a>
     {% empty %}
         <li>No hangboards yet.</li>
     {% endfor %}
-    <a href="{% url 'add_hangboard' %}">Add</a>
+    <a href="{% url 'workouts:add_hangboard' %}">Add</a>
     </ul>
     
 {% endblock %}

@@ -23,7 +23,7 @@ class AddWorkoutForm(ModelForm):
             'logged',
         )
         widgets = {
-            'hangboard': autocomplete.ModelSelect2(url='autocomplete_hangboard')
+            'hangboard': autocomplete.ModelSelect2(url='workouts:autocomplete_hangboard')
         }
 
 
@@ -71,8 +71,8 @@ class AddWorkoutSetForm(ModelForm):
             'rest_after',
         )
         widgets = {
-            'exercise': autocomplete.ModelSelect2(url='autocomplete_exercise'),
-            'left_hold': autocomplete.ModelSelect2(url='autocomplete_hold'),
+            'exercise': autocomplete.ModelSelect2(url='workouts:autocomplete_exercise'),
+            'left_hold': autocomplete.ModelSelect2(url='workouts:autocomplete_hold'),
         }
 
 
@@ -94,5 +94,5 @@ class AddHoldForm(ModelForm):
 
         )
         widgets = {
-            'hold_type': autocomplete.ModelSelect2(url='autocomplete_hold_type')
+            'hold_type': autocomplete.ModelSelect2(url='workouts:autocomplete_hold_type')
         }

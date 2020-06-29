@@ -11,48 +11,54 @@
         <meta name="description" content="{{ description }}">
 
         <!-- Stylesheets -->
-        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+        <!--<link rel="stylesheet" href="{% static 'css/main.css' %}">-->
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     </head>
-    <header>
-        <nav>
-            <a href="{% url 'home' %}">hangboard.io</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'workout_list' %}">Workouts</a>
-                <a href="{% url 'hangboard_list' %}">Hangboards</a>
-                <a href="{% url 'profile' %}">Profile</a>
-                <a href="{% url 'preferences' %}">Preferences</a>
-                <a href="{% url 'measurements' %}">Measurements</a>
-                <a href="{% url 'account_logout' %}">Log Out</a>
-            {% else %}
-                <a href="{% provider_login_url "google" %}">Log In</a>
-            {% endif %}
-        </nav>
-        {% block header %}
-
-        {% endblock %}
-    </header>
-
     <body>
-        <section id="content">
+        <header>
+            <nav class="nav justify-content-center">
+                <a class="nav-link" href="{% url 'home' %}">hangboard.io</a>
+                <a class="nav-link" href="{% url 'blog:index' %}">Blog</a>
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'workouts:workout_list' %}">Workouts</a>
+                    <a class="nav-link" href="{% url 'workouts:hangboard_list' %}">Hangboards</a>
+                    <a class="nav-link" href="{% url 'climbers:profile' %}">Profile</a>
+                    <a class="nav-link" href="{% url 'climbers:preferences' %}">Preferences</a>
+                    <a class="nav-link" href="{% url 'climbers:measurements' %}">Measurements</a>
+                    <a class="btn btn-primary" href="{% url 'allauth:account_logout' %}">Log Out</a>
+                {% else %}
+                    <a class="btn btn-primary"href="{% provider_login_url "google" %}">Log In</a>
+                {% endif %}
+            </nav>
+            {% block header %}
+
+            {% endblock %}
+        </header>
+
+        <div id="content" class="container container-fluid">
 
             {% block content %}
 
             {% endblock %}
 
-        </section>
+        </div>
 
-    </body>
+        <footer>
 
-    <footer>
+            {% block footer %}
 
-        {% block footer %}
+            {% endblock %}
+
+        </footer>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+        {% block javascript %}
 
         {% endblock %}
-
-    </footer>
-
-    {% block javascript %}
-
-    {% endblock %}
+    </body>
 
 </html>

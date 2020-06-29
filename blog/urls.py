@@ -8,6 +8,7 @@ from blog.views import PostDeleteView
 
 
 urlpatterns = [
+    path('', PostListView.as_view(), name='index'),
     path('posts/', PostListView.as_view(), name ='post_list'),
     path('post/<slug:slug>', PostDetailView.as_view(), name='post_detail'),
     path('posts/create', PostCreateView.as_view(), name='post_create'),

@@ -16,7 +16,7 @@ class SimpleModel(models.Model):
 
     def get_absolute_url(self):
         args = [self.__getattribute__(url_param) for url_param in self.url_params]
-        return reverse(self.url_name, args =args)
+        return reverse(f'workouts:{self.url_name}', args =args)
     
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, default='')

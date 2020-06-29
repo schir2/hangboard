@@ -93,7 +93,7 @@ def add_workout_view(request):
                 climber=request.user,
                 **context['form'].cleaned_data,
             )
-            return redirect('workout_detail', workout_id=workout.id)
+            return redirect('workouts:workout_detail', workout_id=workout.id)
     else:
         context['form'] = AddWorkoutForm()
     return render(request, template_name=template_name, context=context)
@@ -117,7 +117,7 @@ def add_workout_set_view(request, workout_id, previous=None):
                 **context['form'].cleaned_data
             )
             workout_set.save()
-            return redirect('workout_detail', workout_id=workout.pk)
+            return redirect('workouts:workout_detail', workout_id=workout.pk)
     else:
         context['form'] = AddWorkoutSetForm(initial=initial_fields)
 

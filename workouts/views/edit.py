@@ -14,7 +14,7 @@ def edit_exercise_view(request, exercise_id):
         context['form'] = EditExerciseForm(request.POST)
         if context['form'].is_valid():
             context['form'].save()
-        return redirect('exercise_list')
+        return redirect('workouts:exercise_list')
     else:
         context['form'] = EditExerciseForm(initial=initial_fields)
     return render(request, template_name=template_name, context=context)

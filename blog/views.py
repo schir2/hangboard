@@ -26,7 +26,7 @@ class PostCreateView(CreateView):
     template_name_suffix = '_form'
 
     def get_success_url(self):
-        return reverse('post_detail', args=(self.object.slug,))
+        return reverse('blog:post_detail', args=(self.object.slug,))
 
 
 class PostUpdateView(UpdateView):
@@ -35,7 +35,7 @@ class PostUpdateView(UpdateView):
     template_name_suffix = '_form'
 
     def get_success_url(self):
-        return reverse('post_detail', args=(self.object.slug,))
+        return reverse('blog:post_detail', args=(self.object.slug,))
 
 
 class PostDeleteView(DeleteView):
@@ -43,4 +43,4 @@ class PostDeleteView(DeleteView):
     template_name_suffix = '_delete'
 
     def get_success_url(self):
-        return reverse('post_list')
+        return reverse('blog:post_list')

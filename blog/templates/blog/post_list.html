@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    <a href="{% url 'post_create' %}">Add Post</a>
+    <a href="{% url 'blog:post_create' %}">Add Post</a>
     {% for post in posts %}
-        <a href="{% url 'post_detail' slug=post.slug %}">{{ post.title }}</a>
-        <a href="{% url 'post_delete' slug=post.slug %}">Delete</a>
+        <a href="{% url 'blog:post_detail' slug=post.slug %}">{{ post.title }}</a>
+        <a href="{% url 'blog:post_delete' slug=post.slug %}">Delete</a>
     {% endfor %}
 
 {% endblock %}

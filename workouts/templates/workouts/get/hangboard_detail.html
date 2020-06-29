@@ -4,7 +4,7 @@
 
     <h1>{{ hangboard.name }}</h1>
     {{ form }}
-    <a href="{% url 'add_hold' hangboard_id=hangboard.pk %}">+</a>
+    <a href="{% url 'workouts:add_hold' hangboard_id=hangboard.pk %}">+</a>
     {% for hold in hangboard.hold_set.all %}
         {{ hold.name }}
     {% endfor %}
